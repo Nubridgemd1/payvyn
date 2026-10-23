@@ -1,15 +1,11 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 132 138" fill="none">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 8 58 122" fill="none">
   <defs>
     <linearGradient id="pvleaf" x1="10" y1="124" x2="50" y2="16" gradientUnits="userSpaceOnUse">
       <stop offset="0" stop-color="#1c7a4e"/>
       <stop offset="1" stop-color="#55c07e"/>
     </linearGradient>
   </defs>
-  <!-- Wavy leaves (behind the P, on the left) -->
   <path d="M12 124 C 2 98, 18 88, 14 62 C 11 42, 30 36, 44 16 C 34 42, 30 60, 32 82 C 33 100, 24 112, 24 124 Z" fill="#55c07e"/>
   <path d="M18 126 C 8 100, 24 90, 20 64 C 17 44, 36 38, 50 18 C 40 44, 36 62, 38 84 C 39 102, 30 114, 30 126 Z" fill="url(#pvleaf)"/>
   <path d="M20 120 C 14 98, 28 86, 26 64 C 24 48, 38 42, 46 24" stroke="#ffffff" stroke-width="4" stroke-linecap="round" fill="none"/>
-  <!-- Full navy P on top (stem + closed bowl) -->
-  <rect x="46" y="14" width="22" height="108" rx="11" fill="#163a5c"/>
-  <path d="M68 14 h16 a34 34 0 0 1 0 68 h-16 v-16 h16 a18 18 0 0 0 0 -36 h-16 z" fill="#163a5c"/>
 </svg>
