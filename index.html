@@ -224,7 +224,6 @@
     <div class="tabs">
       <button id="t-home" class="on" onclick="nav('home')">Overview</button>
       <button id="t-onboard" onclick="nav('onboard')">Open &amp; Fund Account</button>
-      <button id="t-console" onclick="nav('console')">Core Console</button>
       <button id="installBtn" onclick="pwaInstall()" hidden style="background:var(--navy);color:#fff">&#8595; Install app</button>
     </div>
   </div>
@@ -239,7 +238,6 @@
       <p>Payvyn lets a credit union onboard a customer, verify their identity, securely link an external bank account, capture authorization, and move funds in &mdash; by ACH or FedNow &mdash; straight into the core. A single foundation that scales to additional digital products and transfer services.</p>
       <div class="cta">
         <button class="btn gold lg" onclick="nav('onboard')">Try the onboarding flow &rarr;</button>
-        <button class="btn ghost lg" onclick="nav('console')">Open the Core Console</button>
       </div>
     </div>
   </div>
@@ -484,7 +482,7 @@ var tT;function toast(m){var t=document.getElementById("toast");t.textContent=m;
 function nav(v){
   ["home","onboard","console"].forEach(function(x){
     document.getElementById("view-"+x).hidden=(x!==v);
-    document.getElementById("t-"+x).classList.toggle("on",x===v);
+    var tb=document.getElementById("t-"+x);if(tb)tb.classList.toggle("on",x===v);
   });
   window.scrollTo(0,0);
   if(v==="console"&&sessionStorage.getItem("cb_in")==="1"){showConsole();}
@@ -879,6 +877,9 @@ function seedDemo(){
 
 /* ---------- boot ---------- */
 pickRail("ACH");
+/* direct-link access to the Core Console (not shown in the public nav): payvyn.org/#console */
+(function(){var h=(location.hash||"").replace("#","").toLowerCase();if(h==="console"||h==="core"||h==="admin"){nav("console");}})();
+window.addEventListener("hashchange",function(){var h=(location.hash||"").replace("#","").toLowerCase();if(h==="console"||h==="core"||h==="admin"){nav("console");}});
 if(sessionStorage.getItem("cb_in")==="1"){/* stays gated until console opened */}
 </script>
 <script>
