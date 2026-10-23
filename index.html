@@ -266,15 +266,19 @@
           <h3 style="margin:0 0 3px;color:var(--navy)">Verify your identity</h3>
           <p class="mini" style="margin:0 0 14px">Capture customer information and run identity verification (CIP/KYC).</p>
           <div class="row2">
-            <div class="field"><label>Full legal name</label><input id="f_name" placeholder="Jordan Rivera"></div>
-            <div class="field"><label>Date of birth</label><input id="f_dob" type="date"></div>
+            <div class="field"><label>Full legal name</label><input id="f_name" autocomplete="name" placeholder="Jordan Rivera"></div>
+            <div class="field"><label>Date of birth</label><input id="f_dob" type="date" autocomplete="bday"></div>
           </div>
           <div class="row2">
-            <div class="field"><label>SSN / ITIN</label><input id="f_ssn" inputmode="numeric" placeholder="XXX-XX-1234"></div>
-            <div class="field"><label>Mobile phone</label><input id="f_phone" inputmode="tel" placeholder="(555) 010-2233"></div>
+            <div class="field"><label>SSN / ITIN</label><input id="f_ssn" inputmode="numeric" autocomplete="off" placeholder="XXX-XX-1234"></div>
+            <div class="field"><label>Mobile phone</label><input id="f_phone" inputmode="tel" autocomplete="tel" placeholder="(555) 010-2233"></div>
           </div>
-          <div class="field"><label>Email</label><input id="f_email" inputmode="email" placeholder="you@email.com"></div>
-          <div class="field"><label>Residential address</label><input id="f_addr" placeholder="100 Main St, Houston, TX 77002"></div>
+          <div class="field"><label>Email</label><input id="f_email" inputmode="email" autocomplete="email" placeholder="you@email.com"></div>
+          <div class="field" style="position:relative"><label>Residential address</label>
+            <input id="f_addr" autocomplete="street-address" placeholder="Start typing your address..." oninput="addrSearch(this.value)" onblur="setTimeout(function(){var e=document.getElementById('addrList');if(e)e.hidden=true;},170)">
+            <div id="addrList" class="typeahead" hidden></div>
+            <div class="mini" id="addrHint" style="margin-top:3px"></div>
+          </div>
           <label style="display:block;font-size:12px;font-weight:600;color:var(--navy);margin:4px 0 6px">Identity documents</label>
           <div class="uploads">
             <label class="up" id="up0"><span class="u-ic">&#128441;</span>ID front<input type="file" accept="image/*" onchange="setUp(0,this)"></label>
@@ -581,6 +585,43 @@ function confirmMicro(){
     finishBank(name,rt,ac,"Micro-deposit verification");
   }else{toast("Amounts don't match - try again");}
 }
+/* ---- address auto-complete (OpenStreetMap Nominatim; free, no API key) ---- */
+var ADDRT;
+function fmtAddr(it){
+  var a=it.address||{},parts=[];
+  var l1=[a.house_number,a.road].filter(Boolean).join(" ");if(l1)parts.push(l1);
+  var city=a.city||a.town||a.village||a.hamlet||a.suburb;if(city)parts.push(city);
+  var st="";if(a["ISO3166-2-lvl4"])st=a["ISO3166-2-lvl4"].replace("US-","");else st=a.state||"";if(st)parts.push(st);
+  if(a.postcode)parts.push(a.postcode);
+  return parts.join(", ");
+}
+function addrSearch(q){
+  var box=document.getElementById("addrList"),hint=document.getElementById("addrHint");
+  q=(q||"").trim();clearTimeout(ADDRT);
+  if(q.length<4){box.hidden=true;hint.textContent="";return;}
+  hint.textContent="Searching addresses...";
+  ADDRT=setTimeout(function(){
+    fetch("https://nominatim.openstreetmap.org/search?format=json&countrycodes=us&limit=6&addressdetails=1&q="+encodeURIComponent(q))
+      .then(function(r){return r.ok?r.json():[];})
+      .then(function(list){
+        hint.textContent="";
+        if(!list||!list.length){box.hidden=true;return;}
+        box.innerHTML=list.map(function(it){
+          var f=fmtAddr(it)||it.display_name,d=esc(f);
+          return '<div onmousedown="pickAddr(this)" data-a="'+d.replace(/'/g,"&#39;")+'">'+d+'</div>';
+        }).join("");
+        box.hidden=false;
+      })
+      .catch(function(){hint.textContent="";box.hidden=true;});
+  },380);
+}
+function pickAddr(el){
+  var a=el.getAttribute("data-a").replace(/&#39;/g,"'").replace(/&amp;/g,"&").replace(/&lt;/g,"<").replace(/&gt;/g,">").replace(/&quot;/g,'"');
+  document.getElementById("f_addr").value=a;
+  document.getElementById("addrList").hidden=true;
+  document.getElementById("addrHint").textContent="";
+}
+
 function finishBank(name,rt,ac,method){
   var type=document.getElementById("f_acctType").value;
   var bal=(Math.floor(Math.random()*8000)+1200);
@@ -642,6 +683,7 @@ function resetFlow(){
   [0,1,2].forEach(function(i){var el=document.getElementById("up"+i);el.classList.remove("set");el.querySelector(".u-ic").innerHTML=["&#128441;","&#128442;","&#128247;"][i];});
   document.getElementById("kycResult").innerHTML="";document.getElementById("bankResult").innerHTML="";
   document.getElementById("bankPick").innerHTML="";document.getElementById("rtNote").innerHTML="";
+  document.getElementById("addrHint").innerHTML="";document.getElementById("addrList").hidden=true;
   document.getElementById("microPanel").hidden=true;
   document.getElementById("btnVerify").hidden=false;document.getElementById("btnVerify").disabled=false;document.getElementById("btnVerify").textContent="Run identity verification";
   document.getElementById("btnTo2").hidden=true;
