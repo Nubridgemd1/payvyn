@@ -599,20 +599,46 @@ function verifyBank(){
   var btn=document.getElementById("btnLink");btn.disabled=true;btn.textContent="Verifying...";
   setTimeout(function(){finishBank(name,rt,ac,"Instant verification");},1000);
 }
+/* Set to your deployed payvyn-verify backend URL to make verification REAL
+   (micro-deposits originated through the credit union's own ACH; no third party).
+   Empty = demo mode. */
+var PAYVYN_VERIFY_API="";
 function startMicro(name){
-  MICRO=[(Math.floor(Math.random()*40)+5)/100,(Math.floor(Math.random()*40)+5)/100];
   document.getElementById("microPanel").hidden=false;
-  document.getElementById("microHint").innerHTML='Two micro-deposits are on the way to your '+esc(name)+' account (normally 1-2 business days). <b>Demo:</b> enter <b>$'+MICRO[0].toFixed(2)+'</b> and <b>$'+MICRO[1].toFixed(2)+'</b> to confirm ownership.';
   document.getElementById("btnLink").hidden=true;
+  if(PAYVYN_VERIFY_API){
+    var rt=document.getElementById("f_routing").value.replace(/\D/g,"");
+    var ac=document.getElementById("f_acct").value.trim();
+    document.getElementById("microHint").innerHTML="Requesting two micro-deposits...";
+    fetch(PAYVYN_VERIFY_API.replace(/\/$/,"")+"/verify/start",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({routing:rt,account:ac,type:document.getElementById("f_acctType").value.toLowerCase(),name:name,email:document.getElementById("f_email").value.trim()})})
+      .then(function(r){return r.json();}).then(function(d){
+        if(!d||!d.ok){document.getElementById("microHint").innerHTML='<span style="color:var(--red)">'+esc((d&&d.error)||"Could not start verification")+'</span>';return;}
+        FLOW.verifyId=d.id;
+        document.getElementById("microHint").innerHTML="Two micro-deposits are on the way to your "+esc(name)+" account via the credit union's ACH (same business day with Same-Day ACH). When they arrive, enter the two amounts below to confirm ownership.";
+      }).catch(function(){document.getElementById("microHint").innerHTML='<span style="color:var(--red)">Network error</span>';});
+    return;
+  }
+  MICRO=[(Math.floor(Math.random()*40)+5)/100,(Math.floor(Math.random()*40)+5)/100];
+  document.getElementById("microHint").innerHTML='Two micro-deposits are on the way to your '+esc(name)+' account (normally 1-2 business days). <b>Demo:</b> enter <b>$'+MICRO[0].toFixed(2)+'</b> and <b>$'+MICRO[1].toFixed(2)+'</b> to confirm ownership.';
 }
 function confirmMicro(){
   var a=parseFloat(document.getElementById("md1").value),b=parseFloat(document.getElementById("md2").value);
   if(isNaN(a)||isNaN(b)){toast("Enter both deposit amounts");return;}
+  var name=SEL_BANK||document.getElementById("f_bank").value.trim();
+  var rt=document.getElementById("f_routing").value.replace(/\D/g,"");
+  var ac=document.getElementById("f_acct").value.trim();
+  if(PAYVYN_VERIFY_API){
+    if(!FLOW.verifyId){toast("Start verification first");return;}
+    fetch(PAYVYN_VERIFY_API.replace(/\/$/,"")+"/verify/confirm",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({id:FLOW.verifyId,a:a,b:b})})
+      .then(function(r){return r.json();}).then(function(d){
+        if(d&&d.ok&&d.status==="verified"){document.getElementById("microPanel").hidden=true;finishBank(name,rt,ac,"Micro-deposit verification");}
+        else if(d&&d.status==="locked"){toast("Too many attempts - verification locked");}
+        else{toast("Amounts don't match"+(d&&d.attemptsLeft!=null?(" ("+d.attemptsLeft+" left)"):""));}
+      }).catch(function(){toast("Network error");});
+    return;
+  }
   var got=[a,b].sort(function(x,y){return x-y;}),exp=MICRO.slice().sort(function(x,y){return x-y;});
   if(Math.abs(got[0]-exp[0])<0.001&&Math.abs(got[1]-exp[1])<0.001){
-    var name=SEL_BANK||document.getElementById("f_bank").value.trim();
-    var rt=document.getElementById("f_routing").value.replace(/\D/g,"");
-    var ac=document.getElementById("f_acct").value.trim();
     document.getElementById("microPanel").hidden=true;
     finishBank(name,rt,ac,"Micro-deposit verification");
   }else{toast("Amounts don't match - try again");}
