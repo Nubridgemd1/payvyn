@@ -1,0 +1,682 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="description" content="CoreBridge - integrated digital onboarding and payments platform: identity verification, external bank linking, ACH and FedNow account funding, and a core-integrated operations console.">
+<title>CoreBridge - Digital Onboarding &amp; Payments Platform</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='22' fill='%230b3b8c'/%3E%3Crect x='24' y='34' width='52' height='7' rx='3.5' fill='%23fff'/%3E%3Crect x='24' y='47' width='52' height='7' rx='3.5' fill='%236fb4f2'/%3E%3Crect x='24' y='60' width='52' height='7' rx='3.5' fill='%232b7de9'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,500;8..60,600;8..60,700&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --navy:#0b3b8c;--navy2:#0a2f70;--blue:#2b7de9;--sky:#6fb4f2;--gold:#b7791f;
+    --green:#1f8a52;--amber:#b7791f;--red:#c0392b;
+    --ink:#16202e;--muted:#5a687c;--line:#e2e8f2;--bg:#eef3fa;--soft:#f6f9fd;--paper:#fff;
+    --serif:'Source Serif 4',Georgia,serif;--sans:'Inter',-apple-system,Segoe UI,Arial,sans-serif;
+  }
+  *{box-sizing:border-box}
+  html{-webkit-text-size-adjust:100%}
+  body{margin:0;font-family:var(--sans);color:var(--ink);background:var(--bg);font-size:15px;line-height:1.55;-webkit-font-smoothing:antialiased}
+  h1,h2,h3,h4,.ser{font-family:var(--serif)}
+  a{color:var(--blue);text-decoration:none}
+  .wrap{max-width:1120px;margin:0 auto;padding:0 18px}
+  [hidden]{display:none!important}
+
+  /* header */
+  header{position:sticky;top:0;z-index:40;background:rgba(255,255,255,.94);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);border-bottom:1px solid var(--line)}
+  .nav{display:flex;align-items:center;gap:16px;height:62px}
+  .brand{display:flex;align-items:center;gap:10px;cursor:pointer}
+  .mark{width:34px;height:34px;border-radius:9px;background:var(--navy);flex:0 0 34px;position:relative}
+  .mark i{position:absolute;left:7px;height:3.4px;border-radius:3px}
+  .mark i:nth-child(1){top:9px;width:20px;background:#fff}
+  .mark i:nth-child(2){top:15px;width:20px;background:var(--sky)}
+  .mark i:nth-child(3){top:21px;width:20px;background:var(--blue)}
+  .brand b{font-family:var(--serif);font-size:19px;color:var(--navy);font-weight:700}
+  .brand span{font-size:10px;color:var(--muted);display:block;margin-top:-3px;letter-spacing:.3px}
+  .tabs{display:flex;gap:4px;margin-left:auto;flex-wrap:wrap}
+  .tabs button{font-family:var(--sans);font-size:13.5px;font-weight:600;color:var(--muted);background:none;border:none;padding:8px 13px;border-radius:8px;cursor:pointer}
+  .tabs button.on{background:var(--navy);color:#fff}
+  .tabs button:not(.on):hover{background:var(--soft);color:var(--navy)}
+
+  .proto{background:#fff7ea;border-bottom:1px solid #f0dcb0;color:#8a5a12;font-size:12px;text-align:center;padding:5px 10px}
+  .proto b{color:var(--gold)}
+
+  /* hero */
+  .hero{background:linear-gradient(135deg,var(--navy),var(--blue));color:#fff;padding:46px 0 52px;position:relative;overflow:hidden}
+  .hero::after{content:"";position:absolute;right:-80px;top:-60px;width:320px;height:320px;border-radius:50%;background:rgba(255,255,255,.07)}
+  .hero .ey{font-size:11px;letter-spacing:3px;text-transform:uppercase;color:#bcd6f6;font-weight:600}
+  .hero h1{font-size:38px;line-height:1.12;margin:12px 0 10px;font-weight:700;max-width:16ch}
+  .hero p{font-size:16px;color:#dbe7f8;max-width:62ch;margin:0 0 22px}
+  .hero .cta{display:flex;gap:12px;flex-wrap:wrap}
+  .btn{font-family:var(--sans);font-size:14.5px;font-weight:700;border:none;border-radius:10px;padding:12px 20px;cursor:pointer;display:inline-flex;align-items:center;gap:8px;text-decoration:none}
+  .btn.gold{background:var(--gold);color:#fff}
+  .btn.gold:hover{background:#9c6516}
+  .btn.ghost{background:rgba(255,255,255,.12);color:#fff;border:1px solid rgba(255,255,255,.4)}
+  .btn.ghost:hover{background:rgba(255,255,255,.2)}
+  .btn.nav2{background:var(--navy);color:#fff}
+  .btn.nav2:hover{background:var(--navy2)}
+  .btn.block{width:100%;justify-content:center}
+  .btn.lg{padding:14px 24px;font-size:15.5px}
+  .btn:disabled{opacity:.5;cursor:not-allowed}
+
+  section.pad{padding:40px 0}
+  h2.title{font-size:26px;color:var(--navy);margin:0 0 6px;text-align:center}
+  .sub{color:var(--muted);text-align:center;max-width:60ch;margin:0 auto 26px}
+
+  .caps{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}
+  .cap{background:var(--paper);border:1px solid var(--line);border-radius:14px;padding:18px 16px}
+  .cap .ic{width:42px;height:42px;border-radius:11px;background:var(--bg);display:flex;align-items:center;justify-content:center;font-size:21px;margin-bottom:10px}
+  .cap h3{font-size:15px;color:var(--navy);margin:0 0 5px}
+  .cap p{font-size:12.5px;color:var(--muted);margin:0}
+  .cap .step{font-size:10px;letter-spacing:1px;text-transform:uppercase;color:var(--gold);font-weight:700}
+
+  .flowstrip{display:flex;align-items:center;justify-content:center;gap:6px;flex-wrap:wrap;margin-top:28px;background:var(--paper);border:1px solid var(--line);border-radius:14px;padding:16px}
+  .fs{font-size:12.5px;font-weight:600;color:var(--navy);background:var(--bg);border-radius:20px;padding:6px 13px}
+  .fs.core{background:var(--navy);color:#fff}
+  .far{color:var(--sky);font-weight:700}
+
+  /* panels */
+  .panel{background:var(--paper);border:1px solid var(--line);border-radius:16px;padding:24px;box-shadow:0 10px 30px rgba(11,59,140,.06)}
+  .maxw{max-width:640px;margin:0 auto}
+  .steps-head{display:flex;gap:8px;margin-bottom:22px}
+  .sh{flex:1;text-align:center;font-size:11.5px;font-weight:700;color:var(--muted);padding-bottom:9px;border-bottom:3px solid var(--line)}
+  .sh.on{color:var(--navy);border-color:var(--blue)}
+  .sh.done{color:var(--green);border-color:var(--green)}
+  .field{margin-bottom:13px}
+  .field label{display:block;font-size:12px;font-weight:600;color:var(--navy);margin-bottom:4px}
+  .field input,.field select{width:100%;font-family:var(--sans);font-size:16px;padding:11px 12px;border:1px solid var(--line);border-radius:9px;background:#fff;color:var(--ink)}
+  .field input:focus,.field select:focus{outline:none;border-color:var(--blue);box-shadow:0 0 0 3px rgba(43,125,233,.13)}
+  .row2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+  .uploads{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+  .up{border:1.5px dashed var(--line);border-radius:10px;padding:14px 8px;text-align:center;cursor:pointer;font-size:11.5px;color:var(--muted)}
+  .up.set{border-style:solid;border-color:var(--green);color:var(--green);background:#f1faf4}
+  .up input{display:none}
+  .up .u-ic{font-size:20px;display:block;margin-bottom:4px}
+  .result{border-radius:10px;padding:12px 14px;font-size:13px;margin:12px 0;display:flex;gap:10px;align-items:flex-start}
+  .result.ok{background:#f1faf4;border:1px solid #bfe3cd;color:#156b3e}
+  .result.info{background:var(--bg);border:1px solid var(--line);color:var(--navy)}
+  .result .b{font-weight:700}
+  .consent{display:flex;gap:9px;align-items:flex-start;font-size:12px;color:var(--muted);background:var(--soft);border:1px solid var(--line);border-radius:9px;padding:11px 12px;margin:12px 0}
+  .consent input{margin-top:2px;width:16px;height:16px;flex:0 0 16px}
+  .rails{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:6px 0 4px}
+  .rail{border:1.5px solid var(--line);border-radius:11px;padding:12px;cursor:pointer}
+  .rail.on{border-color:var(--blue);background:var(--soft)}
+  .rail b{color:var(--navy);font-size:14px}
+  .rail span{display:block;font-size:11.5px;color:var(--muted);margin-top:2px}
+  .rail .tag{font-size:9.5px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;color:var(--green)}
+  .navbtns{display:flex;gap:10px;margin-top:18px}
+
+  .success{text-align:center;padding:10px}
+  .success .big{width:64px;height:64px;border-radius:50%;background:#e9f8ef;color:var(--green);font-size:34px;display:flex;align-items:center;justify-content:center;margin:0 auto 14px}
+  .refbox{background:var(--bg);border:1px dashed var(--line);border-radius:10px;padding:12px;font-family:ui-monospace,Menlo,monospace;font-size:14px;color:var(--navy);margin:12px 0}
+
+  /* console */
+  .kpis{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;margin-bottom:18px}
+  .kpi{background:var(--paper);border:1px solid var(--line);border-radius:13px;padding:14px 15px}
+  .kpi .l{font-size:10.5px;letter-spacing:.5px;text-transform:uppercase;color:var(--muted);font-weight:600}
+  .kpi .v{font-size:23px;font-weight:800;color:var(--navy);margin-top:3px;font-variant-numeric:tabular-nums}
+  .kpi .v.g{color:var(--green)} .kpi .v.a{color:var(--amber)} .kpi .v.r{color:var(--red)}
+  .ctabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px}
+  .ctabs button{font-size:13px;font-weight:600;color:var(--muted);background:var(--paper);border:1px solid var(--line);padding:8px 14px;border-radius:9px;cursor:pointer}
+  .ctabs button.on{background:var(--navy);color:#fff;border-color:var(--navy)}
+  table{width:100%;border-collapse:collapse;font-size:13px;background:var(--paper)}
+  th,td{text-align:left;padding:10px 12px;border-bottom:1px solid var(--line)}
+  th{font-size:10.5px;letter-spacing:.5px;text-transform:uppercase;color:var(--muted);background:var(--soft)}
+  td.r,th.r{text-align:right;font-variant-numeric:tabular-nums}
+  .tablewrap{border:1px solid var(--line);border-radius:12px;overflow:hidden;overflow-x:auto}
+  .pill{display:inline-block;font-size:10.5px;font-weight:700;padding:3px 9px;border-radius:20px;letter-spacing:.3px}
+  .p-Verified,.p-Settled{background:#e9f8ef;color:#156b3e}
+  .p-Review,.p-Authorized{background:#fff3e0;color:#8a5a12}
+  .p-Processing{background:#e8f0fd;color:var(--navy)}
+  .p-Returned{background:#fdecea;color:#922b21}
+  .flag{color:var(--red);font-weight:700;font-size:11px}
+  td select{font-family:var(--sans);font-size:12px;padding:5px 7px;border:1px solid var(--line);border-radius:7px;background:#fff}
+  .rail-chip{font-size:10px;font-weight:700;padding:2px 7px;border-radius:6px;background:var(--bg);color:var(--navy)}
+  .rail-chip.fn{background:#eaf7f0;color:var(--green)}
+  .recon{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+  .reportgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+  .mini{font-size:12px;color:var(--muted)}
+  .empty{text-align:center;color:var(--muted);padding:30px;font-size:13px}
+
+  /* gate */
+  .gate{max-width:360px;margin:40px auto}
+  .gate .panel{text-align:center}
+  .gate .mk{width:52px;height:52px;border-radius:14px;background:var(--navy);margin:0 auto 12px;position:relative}
+  .gate .mk i{position:absolute;left:11px;height:5px;border-radius:3px}
+  .gate .mk i:nth-child(1){top:14px;width:30px;background:#fff}
+  .gate .mk i:nth-child(2){top:23px;width:30px;background:var(--sky)}
+  .gate .mk i:nth-child(3){top:32px;width:30px;background:var(--blue)}
+
+  footer{background:var(--navy);color:#cdddf3;padding:26px 0;margin-top:40px;font-size:12.5px}
+  footer .wrap{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
+  footer b{color:#fff;font-family:var(--serif)}
+
+  .toast{position:fixed;bottom:22px;left:50%;transform:translateX(-50%);background:var(--navy);color:#fff;padding:12px 20px;border-radius:10px;font-size:13.5px;opacity:0;transition:.28s;z-index:90;pointer-events:none;box-shadow:0 10px 30px rgba(0,0,0,.2)}
+  .toast.show{opacity:1}
+
+  @media(max-width:860px){
+    .caps{grid-template-columns:1fr 1fr}
+    .kpis{grid-template-columns:1fr 1fr 1fr}
+    .hero h1{font-size:30px}
+    .reportgrid{grid-template-columns:1fr}
+    .recon{grid-template-columns:1fr}
+  }
+  @media(max-width:560px){
+    .caps{grid-template-columns:1fr}
+    .kpis{grid-template-columns:1fr 1fr}
+    .row2,.rails{grid-template-columns:1fr}
+    .uploads{grid-template-columns:1fr 1fr 1fr}
+    .tabs button{padding:7px 10px;font-size:12.5px}
+  }
+</style>
+</head>
+<body>
+
+<div class="proto"><b>Prototype demo</b> &mdash; simulated identity, bank linking and payments. No real funds move; data is stored locally in this browser.</div>
+
+<header>
+  <div class="wrap nav">
+    <div class="brand" onclick="nav('home')">
+      <span class="mark"><i></i><i></i><i></i></span>
+      <div><b>CoreBridge</b><span>by BizFormCorp</span></div>
+    </div>
+    <div class="tabs">
+      <button id="t-home" class="on" onclick="nav('home')">Overview</button>
+      <button id="t-onboard" onclick="nav('onboard')">Open &amp; Fund Account</button>
+      <button id="t-console" onclick="nav('console')">Core Console</button>
+    </div>
+  </div>
+</header>
+
+<!-- ============ HOME ============ -->
+<main id="view-home">
+  <div class="hero">
+    <div class="wrap">
+      <div class="ey">Integrated Digital Onboarding &amp; Payments</div>
+      <h1>One platform to identify, verify, link, and fund.</h1>
+      <p>CoreBridge lets a credit union onboard a customer, verify their identity, securely link an external bank account, capture authorization, and move funds in &mdash; by ACH or FedNow &mdash; straight into the core. A single foundation that scales to new products, including Pay&nbsp;Express Money Transfer.</p>
+      <div class="cta">
+        <button class="btn gold lg" onclick="nav('onboard')">Try the onboarding flow &rarr;</button>
+        <button class="btn ghost lg" onclick="nav('console')">Open the Core Console</button>
+      </div>
+    </div>
+  </div>
+
+  <section class="pad wrap">
+    <h2 class="title">Four capabilities, one foundation</h2>
+    <p class="sub">The exact services from the platform proposal &mdash; built natively, end to end.</p>
+    <div class="caps">
+      <div class="cap">
+        <div class="ic">&#128100;</div>
+        <div class="step">Step 1</div>
+        <h3>Identity &amp; Verification</h3>
+        <p>Digitally capture customer information and verify identity for compliant (CIP/KYC) onboarding.</p>
+      </div>
+      <div class="cap">
+        <div class="ic">&#127974;</div>
+        <div class="step">Step 2</div>
+        <h3>Bank Linking</h3>
+        <p>Securely connect an external bank account, verify ownership, and capture consent &amp; authorization.</p>
+      </div>
+      <div class="cap">
+        <div class="ic">&#128179;</div>
+        <div class="step">Step 3</div>
+        <h3>Account Funding</h3>
+        <p>Authorized ACH debit into the credit-union account, with FedNow for eligible instant settlement.</p>
+      </div>
+      <div class="cap">
+        <div class="ic">&#128202;</div>
+        <div class="step">Core</div>
+        <h3>Core-Integrated Ops</h3>
+        <p>Account crediting, transaction tracking, reconciliation, fraud monitoring, and reporting.</p>
+      </div>
+    </div>
+
+    <div class="flowstrip">
+      <span class="fs">Customer</span><span class="far">&rarr;</span>
+      <span class="fs">Identity verified</span><span class="far">&rarr;</span>
+      <span class="fs">Bank linked</span><span class="far">&rarr;</span>
+      <span class="fs">Authorized (ACH / FedNow)</span><span class="far">&rarr;</span>
+      <span class="fs core">Credited to core</span>
+    </div>
+  </section>
+</main>
+
+<!-- ============ ONBOARD ============ -->
+<main id="view-onboard" hidden>
+  <section class="pad wrap">
+    <div class="maxw">
+      <div class="panel">
+        <div class="steps-head">
+          <div class="sh on" id="sh1">1 &middot; Identity</div>
+          <div class="sh" id="sh2">2 &middot; Link bank</div>
+          <div class="sh" id="sh3">3 &middot; Authorize &amp; fund</div>
+        </div>
+
+        <!-- step 1 -->
+        <div id="step1">
+          <h3 style="margin:0 0 3px;color:var(--navy)">Verify your identity</h3>
+          <p class="mini" style="margin:0 0 14px">Capture customer information and run identity verification (CIP/KYC).</p>
+          <div class="row2">
+            <div class="field"><label>Full legal name</label><input id="f_name" placeholder="Jordan Rivera"></div>
+            <div class="field"><label>Date of birth</label><input id="f_dob" type="date"></div>
+          </div>
+          <div class="row2">
+            <div class="field"><label>SSN / ITIN</label><input id="f_ssn" inputmode="numeric" placeholder="XXX-XX-1234"></div>
+            <div class="field"><label>Mobile phone</label><input id="f_phone" inputmode="tel" placeholder="(555) 010-2233"></div>
+          </div>
+          <div class="field"><label>Email</label><input id="f_email" inputmode="email" placeholder="you@email.com"></div>
+          <div class="field"><label>Residential address</label><input id="f_addr" placeholder="100 Main St, Houston, TX 77002"></div>
+          <label style="display:block;font-size:12px;font-weight:600;color:var(--navy);margin:4px 0 6px">Identity documents</label>
+          <div class="uploads">
+            <label class="up" id="up0"><span class="u-ic">&#128441;</span>ID front<input type="file" accept="image/*" onchange="setUp(0,this)"></label>
+            <label class="up" id="up1"><span class="u-ic">&#128442;</span>ID back<input type="file" accept="image/*" onchange="setUp(1,this)"></label>
+            <label class="up" id="up2"><span class="u-ic">&#128247;</span>Selfie<input type="file" accept="image/*" capture="user" onchange="setUp(2,this)"></label>
+          </div>
+          <div id="kycResult"></div>
+          <div class="navbtns">
+            <button class="btn nav2 block" id="btnVerify" onclick="verifyIdentity()">Run identity verification</button>
+            <button class="btn gold block" id="btnTo2" onclick="goStep(2)" hidden>Continue &rarr;</button>
+          </div>
+        </div>
+
+        <!-- step 2 -->
+        <div id="step2" hidden>
+          <h3 style="margin:0 0 3px;color:var(--navy)">Link your external bank</h3>
+          <p class="mini" style="margin:0 0 14px">Securely connect an eligible account and verify ownership.</p>
+          <div class="field"><label>Select your bank</label>
+            <select id="f_bank">
+              <option value="">Choose a bank...</option>
+              <option>Wells Fargo</option><option>Bank of America</option><option>Chase</option>
+              <option>Citibank</option><option>U.S. Bank</option><option>PNC Bank</option>
+              <option>Capital One</option><option>Truist</option><option>Other credit union / bank</option>
+            </select>
+          </div>
+          <div class="row2">
+            <div class="field"><label>Routing number</label><input id="f_routing" inputmode="numeric" placeholder="9 digits"></div>
+            <div class="field"><label>Account number</label><input id="f_acct" inputmode="numeric" placeholder="Account number"></div>
+          </div>
+          <div id="bankResult"></div>
+          <div class="navbtns">
+            <button class="btn ghost" style="background:var(--bg);color:var(--navy);border:1px solid var(--line)" onclick="goStep(1)">&larr; Back</button>
+            <button class="btn nav2 block" id="btnLink" onclick="verifyBank()">Verify account</button>
+            <button class="btn gold block" id="btnTo3" onclick="goStep(3)" hidden>Continue &rarr;</button>
+          </div>
+        </div>
+
+        <!-- step 3 -->
+        <div id="step3" hidden>
+          <h3 style="margin:0 0 3px;color:var(--navy)">Authorize &amp; fund your account</h3>
+          <p class="mini" style="margin:0 0 14px">Choose an amount and settlement rail, then authorize the transfer.</p>
+          <div class="field"><label>Amount to transfer in (USD)</label><input id="f_amount" inputmode="decimal" placeholder="500.00"></div>
+          <div class="rails">
+            <div class="rail on" id="railACH" onclick="pickRail('ACH')">
+              <b>ACH debit</b><span class="tag">Standard</span>
+              <span>Authorized pull from your linked bank. Settles in 1-2 business days.</span>
+            </div>
+            <div class="rail" id="railFN" onclick="pickRail('FedNow')">
+              <b>FedNow instant</b><span class="tag">Where eligible</span>
+              <span>Real-time settlement when both institutions participate.</span>
+            </div>
+          </div>
+          <label class="consent"><input type="checkbox" id="f_consent">
+            <span>I authorize the credit union to debit the linked external account for the amount above via the selected network, and I confirm I am an owner of that account. This authorization is recorded with a timestamp.</span>
+          </label>
+          <div class="navbtns">
+            <button class="btn ghost" style="background:var(--bg);color:var(--navy);border:1px solid var(--line)" onclick="goStep(2)">&larr; Back</button>
+            <button class="btn gold block" id="btnFund" onclick="submitFunding()">Authorize &amp; transfer</button>
+          </div>
+        </div>
+
+        <!-- success -->
+        <div id="stepDone" hidden>
+          <div class="success">
+            <div class="big">&#10003;</div>
+            <h3 style="margin:0 0 4px;color:var(--navy)">Transfer authorized</h3>
+            <p class="mini" id="doneMsg">Your funding transfer has been submitted.</p>
+            <div class="refbox" id="doneRef">REF</div>
+            <p class="mini">This transaction now appears in the Core Console with full tracking.</p>
+            <div class="navbtns">
+              <button class="btn nav2 block" onclick="nav('console')">View in Core Console</button>
+              <button class="btn ghost block" style="background:var(--bg);color:var(--navy);border:1px solid var(--line)" onclick="resetFlow()">Onboard another</button>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+</main>
+
+<!-- ============ CONSOLE ============ -->
+<main id="view-console" hidden>
+  <!-- gate -->
+  <div id="cGate" class="gate">
+    <div class="panel">
+      <div class="mk"><i></i><i></i><i></i></div>
+      <h3 style="margin:0 0 3px;color:var(--navy)">Core Console</h3>
+      <p class="mini" style="margin:0 0 14px">Operations &amp; core-integration dashboard. Passcode-protected.</p>
+      <div class="field"><input id="cPass" type="password" placeholder="Passcode" onkeydown="if(event.key==='Enter')cLogin()"></div>
+      <button class="btn nav2 block" onclick="cLogin()">Enter</button>
+      <p class="mini" style="margin-top:10px">Demo passcode: <b>corebridge2026</b></p>
+    </div>
+  </div>
+
+  <!-- app -->
+  <section id="cApp" class="pad wrap" hidden>
+    <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:16px;flex-wrap:wrap">
+      <div>
+        <h2 style="margin:0;color:var(--navy);font-size:22px">Core Console</h2>
+        <p class="mini" style="margin:2px 0 0">Transaction tracking &middot; reconciliation &middot; fraud monitoring &middot; reporting</p>
+      </div>
+      <div style="display:flex;gap:8px">
+        <button class="btn ghost" style="background:var(--bg);color:var(--navy);border:1px solid var(--line);padding:9px 14px" onclick="seedDemo()">+ Demo data</button>
+        <button class="btn ghost" style="background:var(--bg);color:var(--navy);border:1px solid var(--line);padding:9px 14px" onclick="exportCsv()">Export CSV</button>
+      </div>
+    </div>
+
+    <div class="kpis" id="kpis"></div>
+
+    <div class="ctabs">
+      <button class="on" id="c-txns" onclick="cTab('txns')">Transactions</button>
+      <button id="c-customers" onclick="cTab('customers')">Customers</button>
+      <button id="c-recon" onclick="cTab('recon')">Reconciliation</button>
+      <button id="c-fraud" onclick="cTab('fraud')">Fraud monitoring</button>
+      <button id="c-reports" onclick="cTab('reports')">Reports</button>
+    </div>
+
+    <div id="pane-txns"><div class="tablewrap"><table id="txnTable"></table></div></div>
+    <div id="pane-customers" hidden><div class="tablewrap"><table id="custTable"></table></div></div>
+    <div id="pane-recon" hidden></div>
+    <div id="pane-fraud" hidden><div class="tablewrap"><table id="fraudTable"></table></div></div>
+    <div id="pane-reports" hidden></div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <span><b>CoreBridge</b> &mdash; integrated digital onboarding &amp; payments platform. Powered by BizFormCorp.</span>
+    <span>Prototype &middot; ACH + FedNow + core integration &middot; not a live banking system</span>
+  </div>
+</footer>
+
+<div class="toast" id="toast"></div>
+
+<script>
+/* ---------- storage ---------- */
+function getC(){try{return JSON.parse(localStorage.getItem("cb_customers")||"[]");}catch(e){return [];}}
+function setC(v){localStorage.setItem("cb_customers",JSON.stringify(v));}
+function getT(){try{return JSON.parse(localStorage.getItem("cb_txns")||"[]");}catch(e){return [];}}
+function setT(v){localStorage.setItem("cb_txns",JSON.stringify(v));}
+function uid(p){return (p||"")+Math.random().toString(36).slice(2,8).toUpperCase();}
+function money(n){return "$"+Number(n||0).toLocaleString("en-US",{minimumFractionDigits:2,maximumFractionDigits:2});}
+function esc(s){return String(s==null?"":s).replace(/[&<>\"]/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;"}[c];});}
+var tT;function toast(m){var t=document.getElementById("toast");t.textContent=m;t.classList.add("show");clearTimeout(tT);tT=setTimeout(function(){t.classList.remove("show");},2500);}
+
+/* ---------- nav ---------- */
+function nav(v){
+  ["home","onboard","console"].forEach(function(x){
+    document.getElementById("view-"+x).hidden=(x!==v);
+    document.getElementById("t-"+x).classList.toggle("on",x===v);
+  });
+  window.scrollTo(0,0);
+  if(v==="console"&&sessionStorage.getItem("cb_in")==="1"){showConsole();}
+}
+
+/* ---------- onboarding state ---------- */
+var FLOW={kyc:false,bank:null,rail:"ACH",ups:[false,false,false]};
+
+function setUp(i,input){
+  var f=input.files&&input.files[0];
+  var el=document.getElementById("up"+i);
+  if(f){FLOW.ups[i]=true;el.classList.add("set");el.querySelector(".u-ic").innerHTML="&#10003;";}
+}
+function goStep(n){
+  [1,2,3].forEach(function(s){document.getElementById("step"+s).hidden=(s!==n);});
+  document.getElementById("stepDone").hidden=true;
+  document.getElementById("sh1").className="sh "+(n>1?"done":(n===1?"on":""));
+  document.getElementById("sh2").className="sh "+(n>2?"done":(n===2?"on":""));
+  document.getElementById("sh3").className="sh "+(n===3?"on":"");
+}
+function verifyIdentity(){
+  var name=document.getElementById("f_name").value.trim();
+  var ssn=document.getElementById("f_ssn").value.trim();
+  var email=document.getElementById("f_email").value.trim();
+  if(!name||!ssn||!email){toast("Enter name, SSN/ITIN and email");return;}
+  var btn=document.getElementById("btnVerify");btn.disabled=true;btn.textContent="Verifying...";
+  setTimeout(function(){
+    FLOW.kyc=true;
+    document.getElementById("kycResult").innerHTML=
+      '<div class="result ok"><span>&#10003;</span><div><span class="b">Identity verified.</span> Name, SSN/ITIN and address matched; OFAC screening clear. A CIP record has been created for compliance.</div></div>';
+    btn.hidden=true;document.getElementById("btnTo2").hidden=false;
+  },900);
+}
+function verifyBank(){
+  var bank=document.getElementById("f_bank").value;
+  var rt=document.getElementById("f_routing").value.trim();
+  var ac=document.getElementById("f_acct").value.trim();
+  if(!bank||rt.length<4||ac.length<4){toast("Select a bank and enter routing + account");return;}
+  var btn=document.getElementById("btnLink");btn.disabled=true;btn.textContent="Verifying...";
+  setTimeout(function(){
+    var bal=(Math.floor(Math.random()*8000)+1200);
+    FLOW.bank={name:bank,acct4:ac.slice(-4),routing4:rt.slice(-4),balance:bal};
+    document.getElementById("bankResult").innerHTML=
+      '<div class="result ok"><span>&#10003;</span><div><span class="b">'+esc(bank)+' account linked.</span> Ownership verified and account details confirmed. Available balance check: '+money(bal)+'.</div></div>';
+    btn.hidden=true;document.getElementById("btnTo3").hidden=false;
+  },900);
+}
+function pickRail(r){
+  FLOW.rail=r;
+  document.getElementById("railACH").classList.toggle("on",r==="ACH");
+  document.getElementById("railFN").classList.toggle("on",r==="FedNow");
+}
+function submitFunding(){
+  var amt=parseFloat(document.getElementById("f_amount").value);
+  if(!amt||amt<=0){toast("Enter a valid amount");return;}
+  if(!document.getElementById("f_consent").checked){toast("Please authorize the debit to continue");return;}
+  var name=document.getElementById("f_name").value.trim()||"New Customer";
+  var custId=uid("CUS-");
+  var customers=getC();
+  customers.unshift({
+    id:custId,name:name,
+    dob:document.getElementById("f_dob").value,
+    ssn4:(document.getElementById("f_ssn").value.trim().slice(-4)),
+    email:document.getElementById("f_email").value.trim(),
+    phone:document.getElementById("f_phone").value.trim(),
+    address:document.getElementById("f_addr").value.trim(),
+    kyc:"Verified",
+    bank:FLOW.bank||{name:"Linked bank",acct4:"0000",routing4:"0000"},
+    created:Date.now()
+  });
+  setC(customers);
+  var ref=uid("CB-");
+  var instant=FLOW.rail==="FedNow";
+  var flagged=amt>=2500;
+  var txns=getT();
+  txns.unshift({
+    id:ref,custId:custId,custName:name,amount:amt,rail:FLOW.rail,
+    status:instant?"Settled":"Processing",flagged:flagged,created:Date.now()
+  });
+  setT(txns);
+  document.getElementById("step1").hidden=true;document.getElementById("step2").hidden=true;document.getElementById("step3").hidden=true;
+  document.getElementById("stepDone").hidden=false;
+  document.getElementById("sh3").className="sh done";
+  document.getElementById("doneRef").textContent="Reference: "+ref;
+  document.getElementById("doneMsg").innerHTML=(instant
+     ? "Your <b>FedNow</b> transfer of "+money(amt)+" settled instantly and was credited to the core."
+     : "Your <b>ACH</b> transfer of "+money(amt)+" is processing and will settle to the core in 1-2 business days.")
+     +(flagged?" This larger transfer was auto-flagged for a routine fraud review.":"");
+  toast("Transfer authorized");
+}
+function resetFlow(){
+  FLOW={kyc:false,bank:null,rail:"ACH",ups:[false,false,false]};
+  ["f_name","f_dob","f_ssn","f_phone","f_email","f_addr","f_bank","f_routing","f_acct","f_amount"].forEach(function(id){var e=document.getElementById(id);if(e)e.value="";});
+  document.getElementById("f_consent").checked=false;
+  [0,1,2].forEach(function(i){var el=document.getElementById("up"+i);el.classList.remove("set");el.querySelector(".u-ic").innerHTML=["&#128441;","&#128442;","&#128247;"][i];});
+  document.getElementById("kycResult").innerHTML="";document.getElementById("bankResult").innerHTML="";
+  document.getElementById("btnVerify").hidden=false;document.getElementById("btnVerify").disabled=false;document.getElementById("btnVerify").textContent="Run identity verification";
+  document.getElementById("btnTo2").hidden=true;
+  document.getElementById("btnLink").hidden=false;document.getElementById("btnLink").disabled=false;document.getElementById("btnLink").textContent="Verify account";
+  document.getElementById("btnTo3").hidden=true;
+  pickRail("ACH");
+  goStep(1);
+}
+
+/* ---------- console ---------- */
+function cLogin(){
+  var p=document.getElementById("cPass").value;
+  if(p==="corebridge2026"){sessionStorage.setItem("cb_in","1");showConsole();}
+  else{toast("Incorrect passcode");}
+}
+function showConsole(){
+  document.getElementById("cGate").hidden=true;
+  document.getElementById("cApp").hidden=false;
+  renderAll();
+}
+function renderAll(){renderKpis();cTab(curTab);}
+var curTab="txns";
+function cTab(t){
+  curTab=t;
+  ["txns","customers","recon","fraud","reports"].forEach(function(x){
+    document.getElementById("pane-"+x).hidden=(x!==t);
+    document.getElementById("c-"+x).classList.toggle("on",x===t);
+  });
+  if(t==="txns")renderTxns();
+  if(t==="customers")renderCustomers();
+  if(t==="recon")renderRecon();
+  if(t==="fraud")renderFraud();
+  if(t==="reports")renderReports();
+}
+function renderKpis(){
+  var T=getT(),C=getC();
+  var funded=T.filter(function(x){return x.status==="Settled";}).reduce(function(a,b){return a+Number(b.amount);},0);
+  var pending=T.filter(function(x){return x.status==="Processing"||x.status==="Authorized";}).length;
+  var returns=T.filter(function(x){return x.status==="Returned";}).length;
+  var flagged=T.filter(function(x){return x.flagged&&x.status!=="Returned";}).length;
+  document.getElementById("kpis").innerHTML=
+    tile("Customers",C.length,"")+
+    tile("Funded (settled)",money(funded),"g")+
+    tile("Pending",pending,"a")+
+    tile("Returns",returns,"r")+
+    tile("Flagged",flagged,"a");
+}
+function tile(l,v,c){return '<div class="kpi"><div class="l">'+l+'</div><div class="v '+c+'">'+v+'</div></div>';}
+
+var STATUSES=["Authorized","Processing","Settled","Returned"];
+function renderTxns(){
+  var T=getT();
+  var rows=T.map(function(x){
+    var sel='<select onchange="setStatus(\''+x.id+'\',this.value)">'+STATUSES.map(function(s){return '<option'+(s===x.status?' selected':'')+'>'+s+'</option>';}).join("")+'</select>';
+    return '<tr><td style="font-family:ui-monospace,monospace;font-size:12px">'+x.id+'</td>'+
+      '<td>'+esc(x.custName)+'</td>'+
+      '<td class="r">'+money(x.amount)+'</td>'+
+      '<td><span class="rail-chip '+(x.rail==="FedNow"?"fn":"")+'">'+x.rail+'</span></td>'+
+      '<td><span class="pill p-'+x.status+'">'+x.status+'</span>'+(x.flagged?' <span class="flag">&#9873; flag</span>':'')+'</td>'+
+      '<td>'+sel+'</td></tr>';
+  }).join("");
+  document.getElementById("txnTable").innerHTML=
+    '<tr><th>Reference</th><th>Customer</th><th class="r">Amount</th><th>Rail</th><th>Status</th><th>Update</th></tr>'+
+    (rows||'<tr><td colspan="6"><div class="empty">No transactions yet. Run the onboarding flow or add demo data.</div></td></tr>');
+}
+function setStatus(id,s){
+  var T=getT();for(var i=0;i<T.length;i++){if(T[i].id===id)T[i].status=s;}setT(T);renderKpis();renderTxns();toast("Status updated: "+s);
+}
+function renderCustomers(){
+  var C=getC();
+  var rows=C.map(function(c){
+    return '<tr><td style="font-family:ui-monospace,monospace;font-size:12px">'+c.id+'</td>'+
+      '<td>'+esc(c.name)+'</td><td>'+esc(c.email||"-")+'</td>'+
+      '<td>'+esc((c.bank&&c.bank.name)||"-")+' &middot;&middot;'+esc((c.bank&&c.bank.acct4)||"")+'</td>'+
+      '<td><span class="pill p-'+esc(c.kyc)+'">'+esc(c.kyc)+'</span></td></tr>';
+  }).join("");
+  document.getElementById("custTable").innerHTML=
+    '<tr><th>Customer ID</th><th>Name</th><th>Email</th><th>Linked bank</th><th>KYC</th></tr>'+
+    (rows||'<tr><td colspan="5"><div class="empty">No customers yet.</div></td></tr>');
+}
+function renderRecon(){
+  var T=getT();
+  function sumBy(rail){return T.filter(function(x){return x.rail===rail&&x.status==="Settled";}).reduce(function(a,b){return a+Number(b.amount);},0);}
+  function cnt(rail){return T.filter(function(x){return x.rail===rail&&x.status==="Settled";}).length;}
+  var ach=sumBy("ACH"),fn=sumBy("FedNow");
+  var unsettled=T.filter(function(x){return x.status==="Processing"||x.status==="Authorized";}).reduce(function(a,b){return a+Number(b.amount);},0);
+  document.getElementById("pane-recon").innerHTML=
+    '<div class="recon">'+
+      '<div class="panel"><h3 style="margin:0 0 10px;color:var(--navy);font-size:16px">Settled &amp; credited to core</h3>'+
+        '<div class="tablewrap"><table>'+
+        '<tr><th>Rail</th><th class="r">Count</th><th class="r">Amount credited</th></tr>'+
+        '<tr><td><span class="rail-chip">ACH</span></td><td class="r">'+cnt("ACH")+'</td><td class="r">'+money(ach)+'</td></tr>'+
+        '<tr><td><span class="rail-chip fn">FedNow</span></td><td class="r">'+cnt("FedNow")+'</td><td class="r">'+money(fn)+'</td></tr>'+
+        '<tr style="font-weight:700;background:var(--soft)"><td>Total reconciled</td><td class="r">'+(cnt("ACH")+cnt("FedNow"))+'</td><td class="r">'+money(ach+fn)+'</td></tr>'+
+        '</table></div></div>'+
+      '<div class="panel"><h3 style="margin:0 0 10px;color:var(--navy);font-size:16px">In-flight (not yet settled)</h3>'+
+        '<p class="mini">Authorized / processing funding awaiting settlement to the core.</p>'+
+        '<div class="kpi" style="margin-top:8px"><div class="l">Unsettled value</div><div class="v a">'+money(unsettled)+'</div></div>'+
+        '<p class="mini" style="margin-top:12px">Reconciliation matches each settled transfer to a core posting by reference ID; exceptions surface here for review.</p>'+
+      '</div>'+
+    '</div>';
+}
+function renderFraud(){
+  var T=getT().filter(function(x){return x.flagged;});
+  var rows=T.map(function(x){
+    return '<tr><td style="font-family:ui-monospace,monospace;font-size:12px">'+x.id+'</td><td>'+esc(x.custName)+'</td>'+
+      '<td class="r">'+money(x.amount)+'</td><td><span class="rail-chip '+(x.rail==="FedNow"?"fn":"")+'">'+x.rail+'</span></td>'+
+      '<td><span class="pill p-'+x.status+'">'+x.status+'</span></td>'+
+      '<td>'+(x.status==="Returned"?'<span class="mini">resolved</span>':'<button class="btn ghost" style="background:var(--bg);color:var(--navy);border:1px solid var(--line);padding:5px 10px;font-size:12px" onclick="clearFlag(\''+x.id+'\')">Clear</button>')+'</td></tr>';
+  }).join("");
+  document.getElementById("fraudTable").innerHTML=
+    '<tr><th>Reference</th><th>Customer</th><th class="r">Amount</th><th>Rail</th><th>Status</th><th>Action</th></tr>'+
+    (rows||'<tr><td colspan="6"><div class="empty">No flagged transactions. Transfers at or above $2,500 are auto-flagged for review in this demo.</div></td></tr>');
+}
+function clearFlag(id){var T=getT();for(var i=0;i<T.length;i++){if(T[i].id===id)T[i].flagged=false;}setT(T);renderKpis();renderFraud();toast("Flag cleared");}
+function renderReports(){
+  var T=getT();
+  var total=T.reduce(function(a,b){return a+Number(b.amount);},0);
+  var settled=T.filter(function(x){return x.status==="Settled";}).length;
+  var rate=T.length?Math.round(settled/T.length*100):0;
+  var avg=T.length?total/T.length:0;
+  document.getElementById("pane-reports").innerHTML=
+    '<div class="reportgrid">'+
+      '<div class="panel"><div class="kpi" style="border:none;padding:0"><div class="l">Total funding volume</div><div class="v">'+money(total)+'</div></div></div>'+
+      '<div class="panel"><div class="kpi" style="border:none;padding:0"><div class="l">Settlement rate</div><div class="v g">'+rate+'%</div></div></div>'+
+      '<div class="panel"><div class="kpi" style="border:none;padding:0"><div class="l">Average transfer</div><div class="v">'+money(avg)+'</div></div></div>'+
+    '</div>'+
+    '<div class="panel" style="margin-top:14px"><h3 style="margin:0 0 6px;color:var(--navy);font-size:16px">Operational summary</h3>'+
+    '<p class="mini" style="margin:0">'+T.length+' funding transactions across '+getC().length+' onboarded customers. '+
+    'ACH: '+T.filter(function(x){return x.rail==="ACH";}).length+' &middot; FedNow: '+T.filter(function(x){return x.rail==="FedNow";}).length+'. '+
+    'Exportable to CSV for core reconciliation and examination reporting.</p></div>';
+}
+function exportCsv(){
+  var T=getT();
+  if(!T.length){toast("No transactions to export");return;}
+  var head=["Reference","Customer","Amount","Rail","Status","Flagged","Created"];
+  var lines=[head.join(",")].concat(T.map(function(x){
+    return [x.id,'"'+String(x.custName).replace(/"/g,'""')+'"',x.amount,x.rail,x.status,x.flagged?"YES":"",new Date(x.created).toISOString()].join(",");
+  }));
+  var blob=new Blob([lines.join("\n")],{type:"text/csv"});
+  var a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="corebridge-transactions.csv";document.body.appendChild(a);a.click();a.remove();
+  toast("CSV exported");
+}
+function seedDemo(){
+  var names=["Jordan Rivera","Amara Okafor","Liam Chen","Sofia Martinez","Noah Williams","Priya Patel"];
+  var banks=["Wells Fargo","Chase","Bank of America","PNC Bank","Capital One"];
+  var C=getC(),T=getT();
+  for(var i=0;i<6;i++){
+    var id=uid("CUS-");var nm=names[i];
+    var bank=banks[Math.floor(Math.random()*banks.length)];
+    C.unshift({id:id,name:nm,email:nm.toLowerCase().replace(/[^a-z]/g,".")+"@email.com",kyc:(Math.random()<0.85?"Verified":"Review"),bank:{name:bank,acct4:String(1000+Math.floor(Math.random()*8999)).slice(-4),routing4:"4321"},created:Date.now()-i*86400000});
+    var amt=[150,320,500,750,1200,2800,3500][Math.floor(Math.random()*7)];
+    var rail=Math.random()<0.4?"FedNow":"ACH";
+    var st=rail==="FedNow"?"Settled":(["Settled","Processing","Settled","Returned"][Math.floor(Math.random()*4)]);
+    T.unshift({id:uid("CB-"),custId:id,custName:nm,amount:amt,rail:rail,status:st,flagged:amt>=2500,created:Date.now()-i*3600000});
+  }
+  setC(C);setT(T);renderAll();toast("Demo data added");
+}
+
+/* ---------- boot ---------- */
+pickRail("ACH");
+if(sessionStorage.getItem("cb_in")==="1"){/* stays gated until console opened */}
+</script>
+</body>
+</html>
