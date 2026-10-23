@@ -5,7 +5,14 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="description" content="Payvyn - integrated digital onboarding and payments platform: identity verification, external bank linking, ACH and FedNow account funding, and a core-integrated operations console.">
 <title>Payvyn - Digital Onboarding &amp; Payments Platform</title>
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='22' fill='%230b3b8c'/%3E%3Crect x='24' y='34' width='52' height='7' rx='3.5' fill='%23fff'/%3E%3Crect x='24' y='47' width='52' height='7' rx='3.5' fill='%236fb4f2'/%3E%3Crect x='24' y='60' width='52' height='7' rx='3.5' fill='%232b7de9'/%3E%3C/svg%3E">
+<link rel="icon" type="image/png" href="assets/favicon.png">
+<link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#0b3b8c">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Payvyn">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,500;8..60,600;8..60,700&family=Inter:wght@400;500;600;700;800&family=Poppins:wght@600;700;800&display=swap" rel="stylesheet">
@@ -18,7 +25,8 @@
   }
   *{box-sizing:border-box}
   html{-webkit-text-size-adjust:100%}
-  body{margin:0;font-family:var(--sans);color:var(--ink);background:var(--bg);font-size:15px;line-height:1.55;-webkit-font-smoothing:antialiased}
+  body{margin:0;font-family:var(--sans);color:var(--ink);background:var(--bg);font-size:15px;line-height:1.55;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+  img{max-width:100%}
   h1,h2,h3,h4,.ser{font-family:var(--serif)}
   a{color:var(--blue);text-decoration:none}
   .wrap{max-width:1120px;margin:0 auto;padding:0 18px}
@@ -170,18 +178,42 @@
     .reportgrid{grid-template-columns:1fr}
     .recon{grid-template-columns:1fr}
   }
+  @media(max-width:720px){
+    .nav{height:auto;min-height:56px;flex-wrap:wrap;padding:9px 0;gap:6px 12px}
+    .brandmark{height:34px}
+    .brand b{font-size:18px}
+    .brand span{font-size:9.5px}
+    .tabs{order:3;width:100%;margin-left:0;flex-wrap:nowrap;overflow-x:auto;gap:6px;padding-bottom:2px;-webkit-overflow-scrolling:touch;scrollbar-width:none}
+    .tabs::-webkit-scrollbar{display:none}
+    .tabs button{flex:0 0 auto;white-space:nowrap;font-size:13px;padding:8px 12px}
+  }
   @media(max-width:560px){
     .caps{grid-template-columns:1fr}
     .kpis{grid-template-columns:1fr 1fr}
     .row2,.rails{grid-template-columns:1fr}
     .uploads{grid-template-columns:1fr 1fr 1fr}
-    .tabs button{padding:7px 10px;font-size:12.5px}
+    .wrap{padding:0 16px}
+    .hero{padding:34px 0 40px}
+    .hero h1{font-size:27px}
+    .hero p{font-size:14.5px}
+    .hero .ey{font-size:10px;letter-spacing:2px}
+    h2.title{font-size:22px}
+    .sub{font-size:13.5px}
+    .btn.lg{padding:13px 18px;font-size:14.5px}
+    .cta{flex-direction:column}
+    .cta .btn{width:100%;justify-content:center}
+    footer .wrap{flex-direction:column;gap:10px}
+    .panel{padding:18px}
+    .ctabs button{font-size:12px;padding:7px 11px}
+  }
+  @media(max-width:400px){
+    .kpis{grid-template-columns:1fr}
+    .steps-head .sh{font-size:10.5px}
   }
 </style>
 </head>
 <body>
 
-<div class="proto"><b>Prototype demo</b> &mdash; simulated identity, bank linking and payments. No real funds move; data is stored locally in this browser.</div>
 
 <header>
   <div class="wrap nav">
@@ -193,6 +225,7 @@
       <button id="t-home" class="on" onclick="nav('home')">Overview</button>
       <button id="t-onboard" onclick="nav('onboard')">Open &amp; Fund Account</button>
       <button id="t-console" onclick="nav('console')">Core Console</button>
+      <button id="installBtn" onclick="pwaInstall()" hidden style="background:var(--navy);color:#fff">&#8595; Install app</button>
     </div>
   </div>
 </header>
@@ -847,6 +880,14 @@ function seedDemo(){
 /* ---------- boot ---------- */
 pickRail("ACH");
 if(sessionStorage.getItem("cb_in")==="1"){/* stays gated until console opened */}
+</script>
+<script>
+/* PWA: service worker + install prompt */
+if('serviceWorker' in navigator){window.addEventListener('load',function(){navigator.serviceWorker.register('sw.js').catch(function(){});});}
+var _dp=null;
+window.addEventListener('beforeinstallprompt',function(e){e.preventDefault();_dp=e;var b=document.getElementById('installBtn');if(b)b.hidden=false;});
+function pwaInstall(){if(!_dp)return;_dp.prompt();_dp.userChoice.then(function(){_dp=null;var b=document.getElementById('installBtn');if(b)b.hidden=true;});}
+window.addEventListener('appinstalled',function(){var b=document.getElementById('installBtn');if(b)b.hidden=true;});
 </script>
 </body>
 </html>
