@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="description" content="CoreBridge - integrated digital onboarding and payments platform: identity verification, external bank linking, ACH and FedNow account funding, and a core-integrated operations console.">
-<title>CoreBridge - Digital Onboarding &amp; Payments Platform</title>
+<meta name="description" content="Payvyn - integrated digital onboarding and payments platform: identity verification, external bank linking, ACH and FedNow account funding, and a core-integrated operations console.">
+<title>Payvyn - Digital Onboarding &amp; Payments Platform</title>
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='22' fill='%230b3b8c'/%3E%3Crect x='24' y='34' width='52' height='7' rx='3.5' fill='%23fff'/%3E%3Crect x='24' y='47' width='52' height='7' rx='3.5' fill='%236fb4f2'/%3E%3Crect x='24' y='60' width='52' height='7' rx='3.5' fill='%232b7de9'/%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -186,7 +186,7 @@
   <div class="wrap nav">
     <div class="brand" onclick="nav('home')">
       <span class="mark"><i></i><i></i><i></i></span>
-      <div><b>CoreBridge</b><span>by BizFormCorp</span></div>
+      <div><b>Payvyn</b><span>by BizFormCorp</span></div>
     </div>
     <div class="tabs">
       <button id="t-home" class="on" onclick="nav('home')">Overview</button>
@@ -202,7 +202,7 @@
     <div class="wrap">
       <div class="ey">Integrated Digital Onboarding &amp; Payments</div>
       <h1>One platform to identify, verify, link, and fund.</h1>
-      <p>CoreBridge lets a credit union onboard a customer, verify their identity, securely link an external bank account, capture authorization, and move funds in &mdash; by ACH or FedNow &mdash; straight into the core. A single foundation that scales to new products, including Pay&nbsp;Express Money Transfer.</p>
+      <p>Payvyn lets a credit union onboard a customer, verify their identity, securely link an external bank account, capture authorization, and move funds in &mdash; by ACH or FedNow &mdash; straight into the core. A single foundation that scales to new products, including Pay&nbsp;Express Money Transfer.</p>
       <div class="cta">
         <button class="btn gold lg" onclick="nav('onboard')">Try the onboarding flow &rarr;</button>
         <button class="btn ghost lg" onclick="nav('console')">Open the Core Console</button>
@@ -390,7 +390,7 @@
       <p class="mini" style="margin:0 0 14px">Operations &amp; core-integration dashboard. Passcode-protected.</p>
       <div class="field"><input id="cPass" type="password" placeholder="Passcode" onkeydown="if(event.key==='Enter')cLogin()"></div>
       <button class="btn nav2 block" onclick="cLogin()">Enter</button>
-      <p class="mini" style="margin-top:10px">Demo passcode: <b>corebridge2026</b></p>
+      <p class="mini" style="margin-top:10px">Demo passcode: <b>payvyn2026</b></p>
     </div>
   </div>
 
@@ -427,7 +427,7 @@
 
 <footer>
   <div class="wrap">
-    <span><b>CoreBridge</b> &mdash; integrated digital onboarding &amp; payments platform. Powered by BizFormCorp.</span>
+    <span><b>Payvyn</b> &mdash; integrated digital onboarding &amp; payments platform. Powered by BizFormCorp.</span>
     <span>Prototype &middot; ACH + FedNow + core integration &middot; not a live banking system</span>
   </div>
 </footer>
@@ -696,7 +696,7 @@ function resetFlow(){
 /* ---------- console ---------- */
 function cLogin(){
   var p=document.getElementById("cPass").value;
-  if(p==="corebridge2026"){sessionStorage.setItem("cb_in","1");showConsole();}
+  if(p==="payvyn2026"){sessionStorage.setItem("cb_in","1");showConsole();}
   else{toast("Incorrect passcode");}
 }
 function showConsole(){
@@ -824,7 +824,7 @@ function exportCsv(){
     return [x.id,'"'+String(x.custName).replace(/"/g,'""')+'"',x.amount,x.rail,x.status,x.flagged?"YES":"",new Date(x.created).toISOString()].join(",");
   }));
   var blob=new Blob([lines.join("\n")],{type:"text/csv"});
-  var a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="corebridge-transactions.csv";document.body.appendChild(a);a.click();a.remove();
+  var a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="payvyn-transactions.csv";document.body.appendChild(a);a.click();a.remove();
   toast("CSV exported");
 }
 function seedDemo(){
