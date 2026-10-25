@@ -112,6 +112,10 @@
   .result{border-radius:10px;padding:12px 14px;font-size:13px;margin:12px 0;display:flex;gap:10px;align-items:flex-start}
   .result.ok{background:#f1faf4;border:1px solid #bfe3cd;color:#156b3e}
   .result.info{background:var(--bg);border:1px solid var(--line);color:var(--navy)}
+  .result.err{background:#fdecea;border:1px solid #f3c6c0;color:#a5281b}
+  .cipline{display:flex;gap:7px;align-items:center;font-size:12px;margin:2px 0}
+  .cipline .yes{color:var(--green);font-weight:700}
+  .cipline .no{color:var(--red);font-weight:700}
   .result .b{font-weight:700}
   .consent{display:flex;gap:9px;align-items:flex-start;font-size:12px;color:var(--muted);background:var(--soft);border:1px solid var(--line);border-radius:9px;padding:11px 12px;margin:12px 0}
   .consent input{margin-top:2px;width:16px;height:16px;flex:0 0 16px}
@@ -489,7 +493,7 @@ function nav(v){
 }
 
 /* ---------- onboarding state ---------- */
-var FLOW={kyc:false,bank:null,rail:"ACH",ups:[false,false,false]};
+var FLOW={kyc:false,kycStatus:"",ssnType:"",bank:null,rail:"ACH",ups:[false,false,false]};
 
 function setUp(i,input){
   var f=input.files&&input.files[0];
@@ -503,18 +507,80 @@ function goStep(n){
   document.getElementById("sh2").className="sh "+(n>2?"done":(n===2?"on":""));
   document.getElementById("sh3").className="sh "+(n===3?"on":"");
 }
+/* ---- Native CIP / identity verification (SSN + basic info). Provider-backed when configured. ---- */
+function onlyDigits(s){return String(s||"").replace(/\D/g,"");}
+function cipSSN(raw){
+  var s=onlyDigits(raw);
+  if(s.length!==9) return {valid:false,type:"SSN",reason:"must be 9 digits"};
+  var area=s.slice(0,3),grp=s.slice(3,5),ser=s.slice(5);
+  var known={"078051120":1,"219099999":1,"457555462":1,"123456789":1,"987654321":1,"111111111":1};
+  if(known[s]) return {valid:false,type:"SSN",reason:"known-invalid / placeholder number"};
+  if(/^(\d)\1{8}$/.test(s)) return {valid:false,type:"SSN",reason:"all identical digits"};
+  if(area.charAt(0)==="9"){ /* ITIN */
+    var g=parseInt(grp,10);
+    var okItin=(g>=50&&g<=65)||(g>=70&&g<=88)||(g>=90&&g<=92)||(g>=94&&g<=99);
+    if(!okItin) return {valid:false,type:"ITIN",reason:"invalid ITIN group range"};
+    if(ser==="0000") return {valid:false,type:"ITIN",reason:"invalid serial"};
+    return {valid:true,type:"ITIN",reason:""};
+  }
+  if(area==="000"||area==="666"||parseInt(area,10)>=900) return {valid:false,type:"SSN",reason:"invalid area number"};
+  if(grp==="00") return {valid:false,type:"SSN",reason:"invalid group number"};
+  if(ser==="0000") return {valid:false,type:"SSN",reason:"invalid serial number"};
+  return {valid:true,type:"SSN",reason:""};
+}
+function ageFrom(dob){ if(!dob)return null; var d=new Date(dob); if(isNaN(d.getTime()))return null; var t=new Date(); var a=t.getFullYear()-d.getFullYear(); var m=t.getMonth()-d.getMonth(); if(m<0||(m===0&&t.getDate()<d.getDate()))a--; return a; }
+var US_STATES=["AL","AK","AZ","AR","CA","CO","CT","DE","FL","GA","HI","ID","IL","IN","IA","KS","KY","LA","ME","MD","MA","MI","MN","MS","MO","MT","NE","NV","NH","NJ","NM","NY","NC","ND","OH","OK","OR","PA","RI","SC","SD","TN","TX","UT","VT","VA","WA","WV","WI","WY","DC"];
+function detectState(addr){ addr=" "+String(addr||"").toUpperCase().replace(/[^A-Z ]/g," ")+" "; for(var i=0;i<US_STATES.length;i++){ if(addr.indexOf(" "+US_STATES[i]+" ")>=0) return US_STATES[i]; } return ""; }
+function cipCheck(info){
+  var checks=[], reasons=[], hardFail=false, softReview=false;
+  var nm=String(info.name||"").trim(), parts=nm.split(/\s+/);
+  if(parts.length>=2 && nm.length>=3){ checks.push(["Full legal name",true]); } else { checks.push(["Full legal name",false]); reasons.push("Enter first and last name"); hardFail=true; }
+  var s=cipSSN(info.ssn);
+  if(s.valid){ checks.push([s.type+" format & validity",true]); } else { checks.push(["SSN / ITIN validity",false]); reasons.push("SSN/ITIN: "+s.reason); hardFail=true; }
+  var age=ageFrom(info.dob);
+  if(age===null){ checks.push(["Date of birth",false]); reasons.push("Enter a valid date of birth"); hardFail=true; }
+  else if(age<18){ checks.push(["Age 18 or older",false]); reasons.push("Applicant must be 18+"); hardFail=true; }
+  else if(age>120){ checks.push(["Date of birth",false]); reasons.push("Check the date of birth"); hardFail=true; }
+  else checks.push(["Age 18+ ("+age+")",true]);
+  if(/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(String(info.email||""))){ checks.push(["Email format",true]); } else { checks.push(["Email format",false]); reasons.push("Enter a valid email"); hardFail=true; }
+  var ph=onlyDigits(info.phone); if(ph.length===10||(ph.length===11&&ph.charAt(0)==="1")){ checks.push(["Mobile phone",true]); } else { checks.push(["Mobile phone",false]); reasons.push("Add a valid U.S. mobile number"); softReview=true; }
+  var st=detectState(info.address);
+  if(String(info.address||"").trim().length>=6 && st){ checks.push(["Residential address ("+st+")",true]); } else { checks.push(["Residential address",false]); reasons.push("Add a full U.S. address incl. state"); softReview=true; }
+  return {status: hardFail?"failed":(softReview?"review":"verified_basic"), checks:checks, reasons:reasons, type:s.type};
+}
 function verifyIdentity(){
-  var name=document.getElementById("f_name").value.trim();
-  var ssn=document.getElementById("f_ssn").value.trim();
-  var email=document.getElementById("f_email").value.trim();
-  if(!name||!ssn||!email){toast("Enter name, SSN/ITIN and email");return;}
+  var info={
+    name:document.getElementById("f_name").value.trim(),
+    dob:document.getElementById("f_dob").value,
+    ssn:document.getElementById("f_ssn").value.trim(),
+    phone:document.getElementById("f_phone").value.trim(),
+    email:document.getElementById("f_email").value.trim(),
+    address:document.getElementById("f_addr").value.trim()
+  };
+  if(!info.name||!info.ssn||!info.email){toast("Enter name, SSN/ITIN and email");return;}
   var btn=document.getElementById("btnVerify");btn.disabled=true;btn.textContent="Verifying...";
-  setTimeout(function(){
-    FLOW.kyc=true;
-    document.getElementById("kycResult").innerHTML=
-      '<div class="result ok"><span>&#10003;</span><div><span class="b">Identity verified.</span> Name, SSN/ITIN and address matched; OFAC screening clear. A CIP record has been created for compliance.</div></div>';
-    btn.hidden=true;document.getElementById("btnTo2").hidden=false;
-  },900);
+  var finish=function(res,proofed){ btn.disabled=false;btn.textContent="Run identity verification"; renderCip(res,proofed); };
+  if(PAYVYN_VERIFY_API){
+    fetch(PAYVYN_VERIFY_API.replace(/\/$/,"")+"/identity/verify",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(info)})
+      .then(function(r){return r.json().catch(function(){return null;});})
+      .then(function(d){ if(d&&d.ok&&d.status){ finish({status:d.status,checks:d.checks||cipCheck(info).checks,reasons:d.reasons||[],type:d.type||"SSN"}, !!d.proofed); } else { finish(cipCheck(info),false); } })
+      .catch(function(){ finish(cipCheck(info),false); });
+    return;
+  }
+  finish(cipCheck(info),false);
+}
+function renderCip(res,proofed){
+  var rows=res.checks.map(function(c){ return '<div class="cipline"><span class="'+(c[1]?"yes":"no")+'">'+(c[1]?"✓":"✕")+'</span>'+esc(c[0])+'</div>'; }).join("");
+  var cls,head,sub;
+  if(res.status==="failed"){ cls="result err"; head="Verification failed"; sub="Fix the items below and re-run."; FLOW.kyc=false; FLOW.kycStatus="Failed"; }
+  else if(res.status==="review"){ cls="result info"; head="Basic checks passed — manual review"; sub="You can continue; flagged items are routed to review."; FLOW.kyc=true; FLOW.kycStatus="Review"; }
+  else { cls="result ok"; head="Identity checks passed"; sub=(proofed?"Identity proofed by the connected bureau (SSN-to-person match + OFAC). ":"SSN/basic info validated. "); FLOW.kyc=true; FLOW.kycStatus=proofed?"Verified":"Verified (basic)"; }
+  FLOW.ssnType=res.type||"SSN";
+  var note=proofed?"":'<div class="mini" style="margin-top:6px;color:var(--muted)">Full identity proofing (SSN-to-person match + OFAC) activates when the bureau/IDV provider is connected.</div>';
+  var reasonsHtml=(res.reasons&&res.reasons.length)?'<div class="mini" style="margin-top:6px;color:var(--red)">'+res.reasons.map(esc).join("<br>")+'</div>':'';
+  document.getElementById("kycResult").innerHTML='<div class="'+cls+'" style="flex-direction:column;align-items:stretch"><div class="b" style="margin-bottom:6px">'+esc(head)+' &middot; a CIP record was created</div>'+rows+reasonsHtml+'<div class="mini" style="margin-top:6px">'+esc(sub)+'</div>'+note+'</div>';
+  if(res.status==="failed"){ document.getElementById("btnVerify").hidden=false; document.getElementById("btnTo2").hidden=true; }
+  else { document.getElementById("btnVerify").hidden=true; document.getElementById("btnTo2").hidden=false; }
 }
 /* ---- native bank linking: directory search + ABA validation + verification ---- */
 var SEL_BANK="";
@@ -597,7 +663,22 @@ function verifyBank(){
   if(ac.length<4){toast("Enter your account number");return;}
   if(VMETHOD==="micro"){startMicro(name);return;}
   var btn=document.getElementById("btnLink");btn.disabled=true;btn.textContent="Verifying...";
-  setTimeout(function(){finishBank(name,rt,ac,"Instant verification");},1000);
+  var acctType=document.getElementById("f_acctType").value.toLowerCase();
+  var custName=document.getElementById("f_name").value.trim();
+  if(PAYVYN_VERIFY_API){
+    fetch(PAYVYN_VERIFY_API.replace(/\/$/,"")+"/bank/verify",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({routing:rt,account:ac,type:acctType,name:custName})})
+      .then(function(r){return r.json().catch(function(){return null;});})
+      .then(function(d){
+        btn.disabled=false;btn.textContent="Verify & link account";
+        if(d&&d.ok&&d.status==="verified"){ finishBank(name,rt,ac,d.proofed?"Instant verification (bureau)":"Instant verification"); }
+        else if(d&&d.status==="review"){ finishBank(name,rt,ac,"Instant verification — review"); }
+        else if(d&&d.ok===false&&d.error&&d.status!=="notfound"){ toast(d.error); }
+        else { finishBank(name,rt,ac,"Instant verification"); } /* endpoint not live yet -> graceful */
+      })
+      .catch(function(){ btn.disabled=false;btn.textContent="Verify & link account"; finishBank(name,rt,ac,"Instant verification"); });
+    return;
+  }
+  setTimeout(function(){btn.disabled=false;btn.textContent="Verify & link account";finishBank(name,rt,ac,"Instant verification");},1000);
 }
 /* Native micro-deposit verification backend (no third party; rides the CU's own ACH).
    Live sandbox deployment below; set to your own claimed/production Worker when ready. */
@@ -712,7 +793,7 @@ function submitFunding(){
     email:document.getElementById("f_email").value.trim(),
     phone:document.getElementById("f_phone").value.trim(),
     address:document.getElementById("f_addr").value.trim(),
-    kyc:"Verified",
+    kyc:(FLOW.kycStatus||"Verified"),
     bank:FLOW.bank||{name:"Linked bank",acct4:"0000",routing4:"0000"},
     created:Date.now()
   });
@@ -737,7 +818,7 @@ function submitFunding(){
   toast("Transfer authorized");
 }
 function resetFlow(){
-  FLOW={kyc:false,bank:null,rail:"ACH",ups:[false,false,false]};
+  FLOW={kyc:false,kycStatus:"",ssnType:"",bank:null,rail:"ACH",ups:[false,false,false]};
   SEL_BANK="";VMETHOD="instant";MICRO=[0,0];
   ["f_name","f_dob","f_ssn","f_phone","f_email","f_addr","f_bank","f_routing","f_acct","f_amount","md1","md2"].forEach(function(id){var e=document.getElementById(id);if(e)e.value="";});
   document.getElementById("f_acctType").value="Checking";

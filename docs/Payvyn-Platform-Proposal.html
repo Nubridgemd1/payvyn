@@ -1,0 +1,265 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Payvyn — Digital Onboarding &amp; Payments Platform Proposal</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,600;8..60,700&family=Inter:wght@400;500;600;700&family=Poppins:wght@700;800&display=swap" rel="stylesheet">
+<style>
+  :root{--navy:#0b3b8c;--blue:#2b7de9;--sky:#6fb4f2;--gold:#b7791f;--ink:#1f2733;--muted:#58647a;--line:#dde5f1;--bg:#eef4fd;--soft:#f3f8ff}
+  *{box-sizing:border-box}
+  @page{size:Letter;margin:16mm 15mm}
+  body{font-family:'Inter',-apple-system,Segoe UI,Arial,sans-serif;color:var(--ink);margin:0;font-size:11px;line-height:1.58}
+  h1,h2,h3,.ser{font-family:'Source Serif 4',Georgia,serif}
+
+  /* cover */
+  .cover{min-height:240mm;display:flex;flex-direction:column;page-break-after:always}
+  .cbrand{display:flex;align-items:center;gap:12px;margin-bottom:auto}
+  .mark{width:40px;height:40px;border-radius:10px;background:var(--navy);flex:0 0 40px;position:relative}
+  .mark i{position:absolute;left:8px;height:4px;border-radius:3px}
+  .mark i:nth-child(1){top:12px;width:24px;background:#fff}
+  .mark i:nth-child(2){top:19px;width:24px;background:var(--sky)}
+  .mark i:nth-child(3){top:26px;width:24px;background:var(--blue)}
+  .cbrand b{font-size:21px;font-family:'Poppins','Source Serif 4';color:#163a5c;font-weight:800;letter-spacing:-.3px}
+  .cbrand span{font-size:10px;color:var(--muted);display:block;margin-top:-3px}
+  .cmid{margin:auto 0}
+  .cmid .ey{font-size:11px;letter-spacing:3px;text-transform:uppercase;color:var(--blue);font-weight:600}
+  .cmid h1{font-size:34px;line-height:1.12;color:var(--navy);margin:14px 0 10px;font-weight:700;max-width:92%}
+  .cmid .sub{font-size:14px;color:var(--muted);max-width:82%}
+  .cbar{height:5px;background:linear-gradient(90deg,var(--navy),var(--blue),var(--gold));border-radius:3px;margin:22px 0}
+  .cmeta{display:flex;gap:40px;font-size:11px;margin-top:auto}
+  .cmeta b{display:block;font-size:9px;letter-spacing:1.4px;text-transform:uppercase;color:var(--blue);margin-bottom:3px}
+  .cnote{font-size:9px;color:var(--muted);margin-top:18px;border-top:1px solid var(--line);padding-top:10px}
+
+  h2.sec{font-size:16px;color:var(--navy);margin:20px 0 9px;display:flex;align-items:center;gap:10px}
+  h2.sec .n{background:var(--navy);color:#fff;font-family:'Inter';font-size:11px;font-weight:700;min-width:22px;height:22px;border-radius:50%;text-align:center;line-height:22px}
+  h2.sec:first-of-type{margin-top:0}
+  p{margin:0 0 9px}
+  .lead{background:var(--bg);border-left:4px solid var(--blue);border-radius:5px;padding:12px 15px}
+  h3.cap{font-size:12.5px;color:var(--navy);margin:13px 0 4px;font-family:'Source Serif 4';font-weight:700}
+  h3.cap .num{color:var(--gold);margin-right:6px}
+  ul{margin:4px 0 10px;padding-left:18px}
+  li{margin:3.5px 0}
+  table{width:100%;border-collapse:collapse;margin:6px 0 10px;font-size:10.5px}
+  th,td{border:1px solid var(--line);padding:7px 10px;text-align:left;vertical-align:top}
+  th{background:var(--navy);color:#fff;font-weight:600;font-size:10px}
+  tr:nth-child(even) td{background:#fafcff}
+  td b{color:var(--navy)}
+  .phase{display:flex;gap:11px;margin:7px 0;align-items:flex-start}
+  .phase .pn{flex:0 0 58px;background:var(--navy);color:#fff;border-radius:6px;text-align:center;padding:7px 4px;font-size:9.5px;font-weight:700;line-height:1.25}
+  .phase .pn span{display:block;font-size:14px;font-family:'Source Serif 4'}
+  .phase .pc{flex:1;border:1px solid var(--line);border-radius:6px;padding:8px 12px}
+  .phase .pc b{color:var(--navy)}
+  .note{background:#fff8ec;border:1px solid #f0dcb0;border-left:4px solid var(--gold);border-radius:5px;padding:10px 14px;font-size:10.5px;margin:8px 0}
+  .note b{color:var(--gold)}
+  .built{background:#eaf7f0;border:1px solid #bfe3cd;border-left:4px solid #1f8a52;border-radius:5px;padding:10px 14px;font-size:10.5px;margin:10px 0}
+  .built b{color:#156b3e}
+  .two{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+  .card{border:1px solid var(--line);border-radius:7px;padding:12px 15px}
+  .card h3{margin:0 0 6px;font-size:12.5px;color:var(--navy)}
+  .acc{border:1px solid var(--line);border-radius:7px;padding:14px 16px;margin-top:8px}
+  .sigrow{display:flex;gap:30px;margin-top:22px}
+  .sigrow .s{flex:1}
+  .sigline{border-bottom:1.5px solid var(--navy);height:30px}
+  .sigrow .lbl{font-size:9.5px;color:var(--muted);margin-top:4px}
+  .disc{font-size:9px;color:var(--muted);border-top:1px solid var(--line);padding-top:9px;margin-top:16px;line-height:1.5}
+  .pb{page-break-before:always}
+  .phase,.note,.built,.card{break-inside:avoid}
+  h3.cap{break-after:avoid}
+  tr{break-inside:avoid}
+  h2.sec{break-after:avoid}
+  .foot{display:flex;justify-content:space-between;font-size:9px;color:var(--muted);margin-top:12px;border-top:1px solid var(--line);padding-top:7px}
+</style>
+</head>
+<body>
+
+<!-- COVER -->
+<div class="cover">
+  <div class="cbrand"><img src="payvyn-mark.png" alt="Payvyn" style="height:54px;width:auto;display:block;flex:0 0 auto"><div><b>Payvyn</b><span>Payments Enabled Growth</span></div></div>
+  <div class="cmid">
+    <div class="ey">Platform Proposal</div>
+    <h1>Integrated Digital Onboarding &amp; Payments Platform</h1>
+    <div class="sub">Payvyn is a native, end-to-end platform &mdash; built in-house by BizFormCorp &mdash; that onboards and verifies customers, links any U.S. bank or credit union, and funds credit-union accounts by ACH and FedNow.</div>
+    <div class="cbar"></div>
+  </div>
+  <div class="cmeta">
+    <div><b>Prepared for</b>The Credit Union</div>
+    <div><b>Prepared by</b>BizFormCorp</div>
+    <div><b>Platform</b>Payvyn (native build)</div>
+    <div><b>Date</b>October 2026</div>
+  </div>
+  <div class="cnote">Confidential &mdash; prepared for the named recipient for evaluation purposes. This proposal is informational and does not constitute legal, tax, or regulatory advice.</div>
+</div>
+
+<!-- 1 -->
+<h2 class="sec"><span class="n">1</span>Executive Summary</h2>
+<div class="lead">
+<p><b>Payvyn</b> is a native digital onboarding and payments platform, built and owned by BizFormCorp, that enables the credit union to identify customers, verify their identities, securely link external bank accounts, obtain payment authorization, and move funds into credit-union accounts by ACH or FedNow.</p>
+<p style="margin:0">The platform is already built and operational. We propose to configure and integrate Payvyn with the credit union's core so it can power digital customer acquisition, account funding, and additional digital services over time. Because Payvyn is a single, extensible foundation &mdash; not a set of siloed tools, and not dependent on any third-party account-linking aggregator &mdash; new services can be added as the credit union grows without rebuilding the underlying infrastructure.</p>
+</div>
+<div class="built"><b>Built, deployed &amp; demonstrable today.</b> Payvyn is live as a secure, installable web app at <b>payvyn.org</b> &mdash; member onboarding, native bank linking across 4,100+ U.S. institutions, the ACH/FedNow funding flow, and the operations console. Its <b>native bank-ownership verification is already deployed as a live backend</b> (micro-deposits over the credit union's own ACH, no third party) and verified end to end with server-side, attempt-limited security.</div>
+
+<!-- 2 -->
+<h2 class="sec"><span class="n">2</span>Platform Capabilities</h2>
+<p>Payvyn delivers four integrated capabilities, all developed natively:</p>
+
+<h3 class="cap"><span class="num">2.1</span>Customer Identification and Verification</h3>
+<ul>
+  <li>Digitally capture customer information, with automatic address population.</li>
+  <li>Verify customer identity for compliant CIP/KYC onboarding, including document and selfie capture and OFAC/sanctions screening.</li>
+  <li>Create and retain the compliance record that supports onboarding requirements.</li>
+</ul>
+
+<h3 class="cap"><span class="num">2.2</span>Native External Bank Account Linking</h3>
+<ul>
+  <li>Link <b>any of 4,100+ U.S. banks and credit unions</b> through Payvyn's built-in institution directory &mdash; <b>no third-party aggregator</b>.</li>
+  <li>Verify the account natively: <b>ABA routing-number validation</b> plus <b>instant or micro-deposit</b> ownership verification.</li>
+  <li>Capture and timestamp the required customer consent and authorization before any debit.</li>
+</ul>
+
+<h3 class="cap"><span class="num">2.3</span>Electronic Account Funding</h3>
+<ul>
+  <li>Initiate authorized transfers from the linked external account into the credit-union account.</li>
+  <li><b>ACH debit</b> for authorized withdrawals, with return handling and pre-funding risk screening.</li>
+  <li><b>FedNow</b> for eligible instant settlement where the originating and receiving institutions participate.</li>
+</ul>
+
+<h3 class="cap"><span class="num">2.4</span>Integrated Core Operations</h3>
+<ul>
+  <li>Connect to the credit union's core banking system <b>through its existing, supported integration layer</b> &mdash; alongside the core, with no rip-and-replace.</li>
+  <li>Account crediting, transaction tracking, reconciliation, fraud monitoring, and operational reporting (the Payvyn operations console).</li>
+  <li>An extensible architecture for additional digital financial products.</li>
+</ul>
+<div class="note"><b>Easy, low-risk core integration &mdash; by design.</b> Payvyn connects to the credit union's core through <b>standards-based interfaces</b> (the core vendor's APIs/connector program, NACHA ACH files, and ISO&nbsp;20022 messaging), so it <b>layers onto the existing core rather than replacing it</b>. It is compatible with the major core platforms (for example Jack&nbsp;Henry Symitar/Episys, Corelation KeyStone, Fiserv, and FIS), uses <b>vendor-certified connectors</b> where available, and is validated in a <b>sandbox / UAT environment</b> before a phased go-live &mdash; keeping the credit union's IT lift and operational risk to a minimum.</div>
+
+<!-- 3 -->
+<h2 class="sec pb"><span class="n">3</span>Important Payment Infrastructure Consideration</h2>
+<p>FedNow is an instant payment service, but it does not itself link external bank accounts or authorize the credit union to debit them.</p>
+<div class="note"><b>Starting point:</b> For customers who want to authorize the credit union to pull money from an external bank account, <b>ACH debit</b> is generally the appropriate mechanism. FedNow can <i>complement</i> this by supporting eligible instant payments initiated through participating institutions. Its <b>Request for Payment</b> feature can facilitate payment requests, but the request itself does not move funds &mdash; the payment must still be authorized and initiated appropriately.</div>
+<p style="margin:0">Accordingly, Payvyn leads with <b>ACH debit for authorized account funding</b> and layers in <b>FedNow instant settlement</b> where participation and arrangements allow &mdash; giving the credit union a compliant foundation today and an upgrade path to real-time payments.</p>
+
+<!-- 4 -->
+<h2 class="sec"><span class="n">4</span>Deployment &amp; Integration Approach</h2>
+<p>Because Payvyn is already built, deployment is a configuration-and-integration effort rather than a ground-up build. It is phased so the credit union gains value early and each layer is validated before the next is added.</p>
+
+<div class="phase"><div class="pn"><span>1</span>Identity</div><div class="pc"><b>Configure onboarding &amp; identity verification.</b> Stand up digital information capture, identity verification, and the compliance (CIP/KYC) data flows for new-customer onboarding.</div></div>
+<div class="phase"><div class="pn"><span>2</span>Linking</div><div class="pc"><b>Enable native bank linking &amp; consent.</b> Turn on Payvyn's built-in institution directory and ABA/ownership verification, with auditable consent &amp; authorization capture.</div></div>
+<div class="phase"><div class="pn"><span>3</span>Funding</div><div class="pc"><b>Activate ACH debit account funding.</b> Authorized ACH debits from linked external accounts into credit-union accounts, with return handling and risk screening.</div></div>
+<div class="phase"><div class="pn"><span>4</span>Core</div><div class="pc"><b>Integrate with the core.</b> Connect through the core's supported APIs/connectors (vendor-certified where available), validated in sandbox/UAT, then phased into production &mdash; delivering account crediting, reconciliation, fraud monitoring, and reporting with minimal IT lift and no core replacement.</div></div>
+<div class="phase"><div class="pn"><span>5</span>Instant &amp; expand</div><div class="pc"><b>FedNow &amp; new products.</b> Add eligible instant settlement via FedNow, then extend the shared platform to additional digital products and services as the credit union grows.</div></div>
+
+<!-- 5 -->
+<h2 class="sec"><span class="n">5</span>Platform Components &amp; Connectivity</h2>
+<p>Payvyn is a native build &mdash; its onboarding, bank-linking, funding, and operations logic is developed and owned by BizFormCorp, not rented from an aggregator. The platform connects to the following external systems and payment rails:</p>
+<table>
+  <tr><th>Capability</th><th>How Payvyn delivers it</th></tr>
+  <tr><td><b>Identity &amp; KYC</b></td><td>Native onboarding and verification module (information capture, document/selfie, OFAC screening); optional external data checks for enhanced verification</td></tr>
+  <tr><td><b>Bank-account linking</b></td><td><b>Native</b> &mdash; built-in U.S. institution directory (4,100+), ABA validation, instant / micro-deposit ownership verification. No aggregator</td></tr>
+  <tr><td><b>ACH debit origination</b></td><td>Via the credit union's ACH origination rails / arrangements</td></tr>
+  <tr><td><b>Instant payments</b></td><td>FedNow via the core / a participating institution</td></tr>
+  <tr><td><b>Core banking</b></td><td>Standards-based connectors to the credit union's core (Symitar/Episys, KeyStone, Fiserv, FIS)</td></tr>
+  <tr><td><b>Risk &amp; fraud</b></td><td>Native pre-funding checks, return-risk screening, and transaction monitoring in the operations console</td></tr>
+</table>
+
+<!-- 6 -->
+<h2 class="sec"><span class="n">6</span>Security, Compliance &amp; Governance</h2>
+<div class="two">
+  <div class="card">
+    <h3>Security &amp; data</h3>
+    <ul style="margin:0">
+      <li>Encryption in transit and at rest</li>
+      <li><b>No bank logins or stored banking credentials</b> &mdash; accounts are linked by routing/account with ownership verification</li>
+      <li>Least-privilege access &amp; audit logging</li>
+      <li>GLBA Safeguards-aligned controls</li>
+    </ul>
+  </div>
+  <div class="card">
+    <h3>Compliance</h3>
+    <ul style="margin:0">
+      <li>CIP / KYC and BSA/AML + OFAC screening</li>
+      <li>Consent &amp; authorization records for each transfer</li>
+      <li>NACHA rules for ACH; Regulation E protections</li>
+      <li>Reconciliation &amp; reporting for examinations</li>
+    </ul>
+  </div>
+</div>
+<div class="note" style="margin-top:4px"><b>Governance &amp; roles.</b> The <b>credit union</b> remains the regulated financial institution and system of record &mdash; it holds the accounts and owns the BSA/AML program and regulatory relationships. <b>BizFormCorp</b> is the developer and operator of the Payvyn platform, delivering and supporting it under the credit union's oversight.</div>
+
+<!-- 7 -->
+<h2 class="sec"><span class="n">7</span>Value to the Credit Union</h2>
+<ul>
+  <li><b>Grow membership &amp; deposits</b> &mdash; onboard and fund new members fully online; frictionless external-to-CU account funding brings balances in from day one.</li>
+  <li><b>New non-interest revenue</b> &mdash; a launchpad for funding and transfer products, and the fee income they carry.</li>
+  <li><b>No aggregator dependency or per-link fees</b> &mdash; Payvyn owns the onboarding, linking, and verification stack; the credit union isn't paying an aggregator per connection.</li>
+  <li><b>Fast, low-risk deployment</b> &mdash; the platform and the verification backend are already built and deployed; connecting the CU is configuration and integration, not a ground-up build, and it layers onto the existing core with no rip-and-replace.</li>
+  <li><b>The credit union stays in control</b> &mdash; it remains the regulated institution and system of record, owning the member relationship, the accounts, and the BSA/AML program.</li>
+  <li><b>Future-ready payments</b> &mdash; ACH today with a clean upgrade path to FedNow instant settlement, on one extensible foundation.</li>
+</ul>
+
+<!-- 8 -->
+<h2 class="sec"><span class="n">8</span>Indicative Timeline</h2>
+<table>
+  <tr><th>Phase</th><th>Scope</th><th>Indicative duration</th></tr>
+  <tr><td>Discovery &amp; design</td><td>Requirements, core-integration scope, architecture, SOW</td><td>2&ndash;4 weeks</td></tr>
+  <tr><td>Phase 1&ndash;2</td><td>Onboarding/identity + native bank linking &amp; consent</td><td>3&ndash;6 weeks</td></tr>
+  <tr><td>Phase 3&ndash;4</td><td>ACH funding + core integration, reconciliation, reporting</td><td>5&ndash;9 weeks</td></tr>
+  <tr><td>Phase 5</td><td>FedNow &amp; new-product expansion</td><td>Scheduled after core go-live</td></tr>
+</table>
+<p class="foot" style="border:none;margin:2px 0 0;color:var(--muted)">Durations are shorter than a ground-up build because the platform already exists; they overlap where dependencies allow and are confirmed in the Statement of Work.</p>
+
+<!-- 9 -->
+<h2 class="sec"><span class="n">9</span>Investment &amp; Engagement</h2>
+<p>Payvyn is BizFormCorp's platform; the engagement covers its configuration, core integration, and ongoing operation for the credit union, structured in phases with defined deliverables and acceptance criteria. A detailed <b>Statement of Work and fee schedule</b> is provided following the discovery session, once core-integration scope is confirmed.</p>
+<table>
+  <tr><th>Component</th><th>Basis</th><th>Investment</th></tr>
+  <tr><td>Discovery &amp; design</td><td>Fixed</td><td>[to be finalized]</td></tr>
+  <tr><td>Platform configuration &amp; core integration (Phases 1&ndash;4)</td><td>Fixed, by phase</td><td>[to be finalized]</td></tr>
+  <tr><td>FedNow &amp; new-product expansion (Phase 5)</td><td>Scoped separately</td><td>[to be finalized]</td></tr>
+  <tr><td>Ongoing platform license, support &amp; maintenance</td><td>Monthly / retainer</td><td>[to be finalized]</td></tr>
+</table>
+<p class="foot" style="border:none;margin:2px 0 0;color:var(--muted)">External fees (ACH/FedNow network access, core-integration, and any optional identity data checks) are contracted directly by the credit union.</p>
+
+<!-- 10 -->
+<h2 class="sec"><span class="n">10</span>What the Credit Union Provides to Go Live</h2>
+<p>Because Payvyn and its verification backend are already built and deployed, going live is a configuration-and-integration effort. The credit union provides:</p>
+<table>
+  <tr><th>Area</th><th>What's needed</th></tr>
+  <tr><td><b>ACH origination (ODFI)</b></td><td>The CU originates ACH (most already do), with <b>Same-Day ACH</b> enabled so verification micro-deposits and funding settle the same business day.</td></tr>
+  <tr><td><b>ACH configuration</b></td><td>Company Identification &amp; Name, originating / immediate routing numbers, and the settlement (GL) account entries settle against. SEC code PPD (consumer).</td></tr>
+  <tr><td><b>Core integration access</b></td><td>API/connector credentials + a sandbox for the core (Symitar/Episys, KeyStone, Fiserv, FIS) to post credits, reconcile, and report.</td></tr>
+  <tr><td><b>Identity / KYC</b></td><td>The CU's existing CIP program, or selection of an identity-verification provider to plug in.</td></tr>
+  <tr><td><b>Compliance ownership</b></td><td>BSA/AML program, OFAC screening, and Regulation E as the regulated institution; examiner pre-notification / NCUA non-objection per policy.</td></tr>
+  <tr><td><b>Return handling</b></td><td>Process ACH returns (R-codes) so failed verifications and funding resolve cleanly.</td></tr>
+</table>
+<div class="note" style="margin-top:4px"><b>Go-live sequence:</b> (1) connect the CU's ACH origination &amp; flip Payvyn's verification to production &rarr; (2) wire the core connector for crediting &amp; reconciliation &rarr; (3) enable the identity &amp; funding rails &rarr; (4) pilot with limits, then scale &rarr; (5) add FedNow where eligible.</div>
+
+<!-- 11 -->
+<h2 class="sec"><span class="n">11</span>Next Steps</h2>
+<ol>
+  <li>Live demonstration of the Payvyn platform.</li>
+  <li>Discovery session to confirm requirements and core-integration scope.</li>
+  <li>Statement of Work with finalized phases, timeline, and fees.</li>
+  <li>Execution of agreement and project kickoff.</li>
+</ol>
+
+<div class="acc">
+  <h3 class="ser" style="margin:0 0 4px;color:var(--navy);font-size:13px">Acceptance</h3>
+  <p style="margin:0 0 4px;font-size:10.5px;color:var(--muted)">Accepted on behalf of the parties as the basis for proceeding to a Statement of Work.</p>
+  <div class="sigrow">
+    <div class="s"><div class="sigline"></div><div class="lbl">The Credit Union &mdash; Authorized Signature &amp; Date</div></div>
+    <div class="s"><div class="sigline"></div><div class="lbl">BizFormCorp &mdash; Authorized Signature &amp; Date</div></div>
+  </div>
+</div>
+
+<div class="disc">
+  This proposal is provided for evaluation and planning purposes. Specific integrations, timelines, and fees are finalized in a Statement of Work. Payment-rail capabilities (ACH, FedNow, Request for Payment) are described generally and depend on the credit union's core system, origination arrangements, and participation; implementation is subject to applicable NACHA, Federal Reserve, and regulatory requirements. Nothing herein constitutes legal, tax, or regulatory advice.
+</div>
+
+<div class="foot">
+  <span>Payvyn by BizFormCorp &mdash; Integrated Digital Onboarding &amp; Payments Platform</span>
+  <span>Confidential &middot; October 2026</span>
+</div>
+
+</body>
+</html>

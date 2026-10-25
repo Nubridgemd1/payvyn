@@ -1,0 +1,20 @@
+Payvyn - by BizFormCorp
+Integrated Digital Onboarding & Payments Platform
+===================================================
+
+LIVE PLATFORM:   https://payvyn.org  (secure, HTTPS enforced)
+Core Console passcode:  payvyn2026
+(Use the "+ Demo data" button inside the Core Console to populate it.)
+
+FILES IN THIS FOLDER
+--------------------
+index.html            - the live platform source (onboarding + Core Console)
+banks-us.js           - US institution directory (4,100+ FDIC banks + credit unions)
+Payvyn-Platform-Link.url  - clickable shortcut to the live platform
+
+docs/
+  Payvyn-Platform-Proposal.pdf   - full proposal to the credit union
+  Payvyn-Executive-Summary.pdf   - one-page executive summary
+  (.html sources alongside each PDF)
+
+Repo: https://github.com/Nubridgemd1/payvyn  (branch: master, GitHub Pages)
