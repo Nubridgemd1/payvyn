@@ -493,7 +493,7 @@ function nav(v){
 }
 
 /* ---------- onboarding state ---------- */
-var FLOW={kyc:false,kycStatus:"",ssnType:"",addrResolved:false,bank:null,rail:"ACH",ups:[false,false,false]};
+var FLOW={kyc:false,kycStatus:"",ssnType:"",addrResolved:false,proofed:false,bank:null,rail:"ACH",ups:[false,false,false]};
 
 function setUp(i,input){
   var f=input.files&&input.files[0];
@@ -501,7 +501,7 @@ function setUp(i,input){
   if(f){FLOW.ups[i]=true;el.classList.add("set");el.querySelector(".u-ic").innerHTML="&#10003;";}
 }
 function goStep(n){
-  if(n>=2 && !FLOW.kyc){ toast("Verify your identity (name, date of birth & SSN) before linking an account"); return; }
+  if(n>=2 && !FLOW.proofed){ toast("Your SSN must be verified against your name & date of birth before linking an account"); return; }
   if(n>=3 && !FLOW.bank){ toast("Link and verify your bank account first"); return; }
   [1,2,3].forEach(function(s){document.getElementById("step"+s).hidden=(s!==n);});
   document.getElementById("stepDone").hidden=true;
@@ -622,16 +622,23 @@ function runIdentity(info,btn){
 }
 function renderCip(res,proofed){
   var rows=res.checks.map(function(c){ return '<div class="cipline"><span class="'+(c[1]?"yes":"no")+'">'+(c[1]?"✓":"✕")+'</span>'+esc(c[0])+'</div>'; }).join("");
-  var cls,head,sub;
-  if(res.status==="failed"){ cls="result err"; head="Verification failed"; sub="Fix the items below and re-run."; FLOW.kyc=false; FLOW.kycStatus="Failed"; }
-  else if(res.status==="review"){ cls="result info"; head="Basic checks passed — manual review"; sub="You can continue; flagged items are routed to review."; FLOW.kyc=true; FLOW.kycStatus="Review"; }
-  else { cls="result ok"; head="Identity checks passed"; sub=(proofed?"Identity proofed by the connected bureau (SSN-to-person match + OFAC). ":"SSN/basic info validated. "); FLOW.kyc=true; FLOW.kycStatus=proofed?"Verified":"Verified (basic)"; }
+  var cls,head,sub,note="";
   FLOW.ssnType=res.type||"SSN";
-  var note=proofed?"":'<div class="mini" style="margin-top:6px;color:var(--muted)">Full identity proofing (SSN-to-person match + OFAC) activates when the bureau/IDV provider is connected.</div>';
+  /* Account linking requires a REAL identity match: the SSN matched to the name + DOB (proofed). */
+  FLOW.proofed=(res.status!=="failed") && !!proofed;
+  if(res.status==="failed"){
+    cls="result err"; head="Verification failed"; sub="Correct the highlighted items and re-run."; FLOW.kyc=false; FLOW.kycStatus="Failed";
+  } else if(proofed){
+    cls="result ok"; head="Identity verified"; sub="Your SSN was matched to your name and date of birth, and OFAC screening is clear. A CIP record was created."; FLOW.kyc=true; FLOW.kycStatus="Verified";
+  } else {
+    cls="result info"; head="Identity match required to continue"; FLOW.kyc=false; FLOW.kycStatus="Match pending";
+    sub="Format checks and OFAC sanctions screening passed — but your SSN has not been matched to your name and date of birth yet.";
+    note='<div class="mini" style="margin-top:6px;color:var(--red)">Account linking is disabled until your SSN is matched to your name &amp; DOB. That authoritative match requires the bureau/IDV provider or the credit-union CIP (not yet connected).</div>';
+  }
   var reasonsHtml=(res.reasons&&res.reasons.length)?'<div class="mini" style="margin-top:6px;color:var(--red)">'+res.reasons.map(esc).join("<br>")+'</div>':'';
   document.getElementById("kycResult").innerHTML='<div class="'+cls+'" style="flex-direction:column;align-items:stretch"><div class="b" style="margin-bottom:6px">'+esc(head)+' &middot; a CIP record was created</div>'+rows+reasonsHtml+'<div class="mini" style="margin-top:6px">'+esc(sub)+'</div>'+note+'</div>';
-  if(res.status==="failed"){ document.getElementById("btnVerify").hidden=false; document.getElementById("btnTo2").hidden=true; }
-  else { document.getElementById("btnVerify").hidden=true; document.getElementById("btnTo2").hidden=false; }
+  if(FLOW.proofed){ document.getElementById("btnVerify").hidden=true; document.getElementById("btnTo2").hidden=false; }
+  else { document.getElementById("btnVerify").hidden=false; document.getElementById("btnTo2").hidden=true; }
 }
 /* ---- native bank linking: directory search + ABA validation + verification ---- */
 var SEL_BANK="";
@@ -871,7 +878,7 @@ function submitFunding(){
   toast("Transfer authorized");
 }
 function resetFlow(){
-  FLOW={kyc:false,kycStatus:"",ssnType:"",addrResolved:false,bank:null,rail:"ACH",ups:[false,false,false]};
+  FLOW={kyc:false,kycStatus:"",ssnType:"",addrResolved:false,proofed:false,bank:null,rail:"ACH",ups:[false,false,false]};
   SEL_BANK="";VMETHOD="instant";MICRO=[0,0];
   ["f_name","f_dob","f_ssn","f_phone","f_email","f_addr","f_bank","f_routing","f_acct","f_amount","md1","md2"].forEach(function(id){var e=document.getElementById(id);if(e)e.value="";});
   var se=document.getElementById("f_ssn");if(se)se.dataset.raw="";
