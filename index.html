@@ -501,6 +501,8 @@ function setUp(i,input){
   if(f){FLOW.ups[i]=true;el.classList.add("set");el.querySelector(".u-ic").innerHTML="&#10003;";}
 }
 function goStep(n){
+  if(n>=2 && !FLOW.kyc){ toast("Verify your identity (name, date of birth & SSN) before linking an account"); return; }
+  if(n>=3 && !FLOW.bank){ toast("Link and verify your bank account first"); return; }
   [1,2,3].forEach(function(s){document.getElementById("step"+s).hidden=(s!==n);});
   document.getElementById("stepDone").hidden=true;
   document.getElementById("sh1").className="sh "+(n>1?"done":(n===1?"on":""));
@@ -578,7 +580,7 @@ function verifyIdentity(){
     email:document.getElementById("f_email").value.trim(),
     address:document.getElementById("f_addr").value.trim()
   };
-  if(!info.name||!info.ssn||!info.email){toast("Enter name, SSN/ITIN and email");return;}
+  if(!info.name||!info.dob||!info.ssn||!info.email){toast("Enter your name, date of birth, SSN/ITIN and email");return;}
   if(!info.address){toast("Enter your residential address");return;}
   var btn=document.getElementById("btnVerify");btn.disabled=true;btn.textContent="Verifying...";
   if(!FLOW.addrResolved){
