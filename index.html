@@ -302,11 +302,11 @@
           <h3 style="margin:0 0 3px;color:var(--navy)">Verify your identity</h3>
           <p class="mini" style="margin:0 0 14px">Capture customer information and run identity verification (CIP/KYC).</p>
           <div class="row2">
-            <div class="field"><label>Full legal name</label><input id="f_name" autocomplete="name" placeholder="Jordan Rivera"></div>
-            <div class="field"><label>Date of birth</label><input id="f_dob" type="date" autocomplete="bday"></div>
+            <div class="field"><label>Full legal name</label><input id="f_name" autocomplete="name" placeholder="Jordan Rivera" oninput="fieldCheck('name')" onblur="fieldCheck('name')"><div id="n_name" class="mini" style="margin-top:3px"></div></div>
+            <div class="field"><label>Date of birth</label><input id="f_dob" type="date" autocomplete="bday" oninput="fieldCheck('dob')" onchange="fieldCheck('dob')"><div id="n_dob" class="mini" style="margin-top:3px"></div></div>
           </div>
           <div class="row2">
-            <div class="field"><label>SSN / ITIN</label><input id="f_ssn" inputmode="numeric" autocomplete="off" maxlength="11" placeholder="XXX-XX-1234" oninput="ssnInput(this)"></div>
+            <div class="field"><label>SSN / ITIN</label><input id="f_ssn" inputmode="numeric" autocomplete="off" maxlength="11" placeholder="XXX-XX-1234" oninput="ssnInput(this)"><div id="n_ssn" class="mini" style="margin-top:3px"></div></div>
             <div class="field"><label>Mobile phone</label><input id="f_phone" inputmode="tel" autocomplete="tel" placeholder="(555) 010-2233"></div>
           </div>
           <div class="field"><label>Email</label><input id="f_email" inputmode="email" autocomplete="email" placeholder="you@email.com"></div>
@@ -520,9 +520,20 @@ function ssnInput(el){
   else if(curLen>prev.length){ raw=(prev+digs.slice(-1)).slice(0,9); }        // one digit added
   else if(curLen<prev.length){ raw=prev.slice(0,curLen); }                    // deleted
   else { raw=prev; }
-  el.dataset.raw=raw; el.value=ssnMask(raw);
+  el.dataset.raw=raw; el.value=ssnMask(raw); fieldCheck("ssn");
 }
 function ssnRaw(){ var e=document.getElementById("f_ssn"); return (e&&e.dataset.raw)||""; }
+/* inline per-field validity: green tick when valid, red "Invalid" + highlight when not */
+function setNote(key,ok,msg){
+  var n=document.getElementById("n_"+key); if(n){ n.innerHTML = msg ? '<span style="color:'+(ok?"var(--green)":"var(--red)")+'">'+(ok?"✓ ":"✕ ")+esc(msg)+'</span>' : ""; }
+  var f=document.getElementById("f_"+key); if(f){ f.style.borderColor = (msg&&!ok)?"var(--red)":""; }
+}
+function fieldCheck(key){
+  if(key==="name"){ var nm=document.getElementById("f_name").value.trim(); if(!nm){setNote("name",false,"");return true;} var ok=nm.split(/\s+/).length>=2 && nm.length>=3; setNote("name",ok,ok?"":"Invalid — enter first and last name"); return ok; }
+  if(key==="dob"){ var dv=document.getElementById("f_dob").value; if(!dv){setNote("dob",false,"");return false;} var age=ageFrom(dv); if(age===null){setNote("dob",false,"Invalid date of birth");return false;} if(age<18){setNote("dob",false,"Invalid — must be 18 or older");return false;} if(age>120){setNote("dob",false,"Invalid date of birth");return false;} setNote("dob",true,"Age "+age); return true; }
+  if(key==="ssn"){ var raw=ssnRaw(); if(raw.length===0){setNote("ssn",false,"");return false;} if(raw.length<9){setNote("ssn",false,"Incomplete — 9 digits required");return false;} var s=cipSSN(raw); setNote("ssn",s.valid,s.valid?(s.type+" valid"):("Invalid "+s.type+" — "+s.reason)); return s.valid; }
+  return true;
+}
 /* Verify a U.S. address actually resolves (free geocoder). Fails closed only on a confirmed no-match. */
 function geocodeAddr(q,cb){
   try{
@@ -582,6 +593,11 @@ function verifyIdentity(){
   };
   if(!info.name||!info.dob||!info.ssn||!info.email){toast("Enter your name, date of birth, SSN/ITIN and email");return;}
   if(!info.address){toast("Enter your residential address");return;}
+  /* strict validity of name + DOB + SSN before anything proceeds (highlights invalid fields) */
+  var vName=fieldCheck("name"), vDob=fieldCheck("dob"), vSsn=fieldCheck("ssn");
+  if(!vName){toast("Enter your first and last name");return;}
+  if(!vDob){toast("Enter a valid date of birth (18 or older)");return;}
+  if(!vSsn){var sc=cipSSN(info.ssn);toast("Invalid "+sc.type+": "+sc.reason);return;}
   var btn=document.getElementById("btnVerify");btn.disabled=true;btn.textContent="Verifying...";
   if(!FLOW.addrResolved){
     btn.textContent="Checking address...";
