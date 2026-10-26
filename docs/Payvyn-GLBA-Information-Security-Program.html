@@ -1,0 +1,100 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><title>Payvyn - GLBA Information Security Program</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,600;8..60,700&family=Inter:wght@400;500;600;700&family=Poppins:wght@700;800&display=swap" rel="stylesheet">
+<style>
+  :root{--navy:#0b3b8c;--blue:#2b7de9;--gold:#b7791f;--green:#1f8a52;--red:#c0392b;--ink:#1f2733;--muted:#58647a;--line:#dde5f1;--bg:#eef3fa;--soft:#f6f9fd}
+  *{box-sizing:border-box}@page{size:Letter;margin:14mm 15mm}
+  body{font-family:'Inter',-apple-system,Segoe UI,Arial,sans-serif;color:var(--ink);margin:0;font-size:10.4px;line-height:1.48}
+  h1,h2,h3{font-family:'Source Serif 4',Georgia,serif}
+  .head{display:flex;align-items:center;justify-content:space-between;background:linear-gradient(120deg,var(--navy),var(--blue));color:#fff;padding:14px 18px;border-radius:9px;margin-bottom:12px}
+  .brand{display:flex;align-items:center;gap:11px}.brand .chip{background:#fff;border-radius:9px;padding:4px 7px;display:inline-flex}.brand .chip img{height:36px;display:block}.brand b{font-family:'Poppins';font-size:19px;font-weight:800}
+  .head .t{text-align:right}.head .t b{font-family:'Source Serif 4';font-size:13.5px;display:block}.head .t span{font-size:9.2px;opacity:.92}
+  .lead{background:var(--bg);border-left:4px solid var(--blue);border-radius:5px;padding:9px 14px;font-size:10.2px;margin-bottom:11px}
+  h2.sec{font-size:12px;color:var(--navy);margin:13px 0 5px;padding-bottom:3px;border-bottom:2px solid var(--line)}
+  h2.sec .n{display:inline-block;background:var(--navy);color:#fff;font-size:9px;font-weight:700;width:16px;height:16px;border-radius:5px;text-align:center;line-height:16px;margin-right:6px;font-family:'Inter'}
+  p{margin:0 0 7px}ul{margin:3px 0 7px;padding-left:16px}li{margin:2.5px 0;font-size:10px}
+  b.k{color:var(--navy)}
+  table{width:100%;border-collapse:collapse;font-size:9.3px;margin:3px 0 7px}th,td{border:1px solid var(--line);padding:4px 7px;text-align:left;vertical-align:top}th{background:var(--navy);color:#fff;font-weight:600;font-size:8.7px}td b{color:var(--navy)}
+  .ins{color:var(--red);font-weight:600}
+  .disc{background:#fff8ec;border:1px solid #f0dcb0;border-left:4px solid var(--gold);border-radius:6px;padding:8px 13px;font-size:9.2px;color:#6b5418;margin-top:9px}
+  .pb{page-break-before:always}
+  .foot{display:flex;justify-content:space-between;font-size:8.2px;color:var(--muted);margin-top:11px;border-top:1px solid var(--line);padding-top:6px}.foot b{color:var(--navy)}
+</style></head><body>
+
+<div class="head"><div class="brand"><span class="chip"><img src="payvyn-mark.png" alt="Payvyn"></span><b>Payvyn</b></div>
+<div class="t"><b>Information Security Program</b><span>GLBA Safeguards Rule (16 CFR Part 314) &middot; Written (WISP)</span></div></div>
+
+<div class="lead">Payvyn (BizFormCorp LLC) handles nonpublic personal information (NPI) as a <b>service provider to financial institutions</b>. This Written Information Security Program (WISP) implements the GLBA Safeguards Rule (16 CFR Part 314) and is the document partner institutions request in due diligence. <span class="ins">Owner: [Qualified Individual]. Effective: [date]. Review: annual.</span></div>
+
+<h2 class="sec"><span class="n">1</span>Purpose &amp; scope</h2>
+<p>To protect the security, confidentiality, and integrity of customer NPI that Payvyn receives, processes, or transmits on behalf of financial-institution clients. Scope: the Payvyn onboarding application, verification backend, data stores, supporting cloud infrastructure, and all personnel and service providers with access to NPI.</p>
+<p><b class="k">NPI handled:</b> name, date of birth, SSN/ITIN, address, contact details, bank routing/account numbers, identity documents, and verification results.</p>
+
+<h2 class="sec"><span class="n">2</span>Qualified Individual</h2>
+<p><span class="ins">[Name / title]</span> is designated as the Qualified Individual responsible for overseeing, implementing, and enforcing this program, and reports on it at least annually to BizFormCorp management / the Board.</p>
+
+<h2 class="sec"><span class="n">3</span>Risk assessment</h2>
+<ul>
+  <li>Written risk assessment performed at least <b>annually</b> and on material change, covering confidentiality, integrity, and availability of NPI, and internal &amp; external threats.</li>
+  <li>Risks are rated and mapped to the safeguards in Section 4; residual risk is reviewed by the Qualified Individual.</li>
+</ul>
+
+<h2 class="sec"><span class="n">4</span>Safeguards</h2>
+<table>
+  <tr><th style="width:27%">Control area</th><th style="width:73%">Implementation</th></tr>
+  <tr><td><b>Access control &amp; least privilege</b></td><td>Role-based access; access limited to those who need it; periodic access reviews; prompt deprovisioning.</td></tr>
+  <tr><td><b>Multi-factor authentication</b></td><td>MFA required for administrative and remote access to systems holding NPI.</td></tr>
+  <tr><td><b>Encryption</b></td><td>NPI encrypted <b>in transit</b> (TLS) and <b>at rest</b> (AES-GCM). Full SSNs and account numbers stored server-side only &mdash; never persisted in the browser.</td></tr>
+  <tr><td><b>Data inventory &amp; classification</b></td><td>Documented inventory of NPI, where it is stored/processed, and its classification; minimization &mdash; collect/retain only what is needed.</td></tr>
+  <tr><td><b>Secure development</b></td><td>Secure SDLC, code review, dependency/version pinning, secrets held in a managed secret store (not in code).</td></tr>
+  <tr><td><b>Change management</b></td><td>Reviewed, logged deployments; ability to roll back; separation of duties where feasible.</td></tr>
+  <tr><td><b>Logging &amp; monitoring</b></td><td>Security-relevant events logged; anomaly/alerting; verification attempt-limiting to deter abuse.</td></tr>
+  <tr><td><b>Secure disposal &amp; retention</b></td><td>NPI retained only as long as needed; secure deletion; retention aligned to FI/legal requirements (see Appendix).</td></tr>
+  <tr><td><b>Infrastructure</b></td><td>Hosted on reputable cloud providers with physical/environmental controls; data-handling governed by provider agreements.</td></tr>
+</table>
+
+<h2 class="sec"><span class="n">5</span>Service-provider oversight</h2>
+<ul>
+  <li>Due diligence on providers that store or process NPI (e.g., cloud/infrastructure); written agreements requiring appropriate safeguards; periodic review of their security posture (e.g., SOC reports).</li>
+  <li><span class="ins">[Maintain a current list of subprocessors and their security attestations.]</span></li>
+</ul>
+
+<h2 class="sec pb"><span class="n">6</span>Incident response</h2>
+<ul>
+  <li>Written incident-response plan: detect, triage, contain, eradicate, recover, and document.</li>
+  <li>Defined roles, escalation, and <b>notification</b> to affected financial-institution clients and, where required, regulators/consumers, within the timelines in client agreements and applicable law.</li>
+  <li>Post-incident review feeds the risk assessment and program updates.</li>
+</ul>
+
+<h2 class="sec"><span class="n">7</span>Training &amp; personnel</h2>
+<ul>
+  <li>Security-awareness training at onboarding and at least annually; role-specific training for engineers handling NPI.</li>
+  <li>Background checks and confidentiality agreements for personnel with NPI access <span class="ins">[confirm]</span>.</li>
+</ul>
+
+<h2 class="sec"><span class="n">8</span>Monitoring &amp; testing</h2>
+<ul>
+  <li>Continuous monitoring of systems; regular <b>vulnerability scanning</b>; <b>annual penetration test</b> by a qualified third party <span class="ins">[schedule]</span>.</li>
+  <li>Findings tracked to remediation with owners and due dates.</li>
+</ul>
+
+<h2 class="sec"><span class="n">9</span>Program governance</h2>
+<ul>
+  <li>The Qualified Individual reviews and updates this program at least <b>annually</b> and upon material change, and reports in writing to management/Board (program status, risks, incidents, test results).</li>
+  <li>This WISP is provided to FI clients on request and incorporated into client data-security addenda.</li>
+</ul>
+
+<h2 class="sec">Appendix &mdash; data &amp; retention</h2>
+<table>
+  <tr><th style="width:40%">Data</th><th style="width:30%">Where</th><th style="width:30%">Retention</th></tr>
+  <tr><td>SSN/ITIN, account numbers</td><td>Server-side, encrypted</td><td>Minimum needed; FI is system of record</td></tr>
+  <tr><td>CIP / applicant records</td><td>FI (member) + program</td><td>5 yrs after account closure (31 CFR 1020.220)</td></tr>
+  <tr><td>ACH authorizations</td><td>Program / originator</td><td>2 yrs after termination (Nacha)</td></tr>
+  <tr><td>Verification results / logs</td><td>Payvyn backend</td><td><span class="ins">[defined retention]</span></td></tr>
+</table>
+
+<div class="disc"><b>Template for finalization.</b> This WISP reflects Payvyn's architecture and the GLBA Safeguards Rule; complete the <span class="ins">[bracketed]</span> items (Qualified Individual, dates, pen-test schedule, subprocessor list, personnel controls) and have it reviewed by counsel/security before issuance. Not legal advice.</div>
+
+<div class="foot"><span><b>Payvyn</b> by BizFormCorp &middot; GLBA Information Security Program (WISP)</span><span>Confidential &middot; Draft, October 2026</span></div>
+</body></html>

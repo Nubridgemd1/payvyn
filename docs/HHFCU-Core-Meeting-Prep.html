@@ -1,0 +1,154 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>HHFCU Core Meeting - Prep</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,600;8..60,700&family=Inter:wght@400;500;600;700&family=Poppins:wght@700;800&display=swap" rel="stylesheet">
+<style>
+  :root{--navy:#0b3b8c;--blue:#2b7de9;--gold:#b7791f;--green:#1f8a52;--red:#c0392b;--ink:#1f2733;--muted:#58647a;--line:#dde5f1;--bg:#eef3fa;--soft:#f6f9fd}
+  *{box-sizing:border-box}
+  @page{size:Letter;margin:13mm 14mm}
+  body{font-family:'Inter',-apple-system,Segoe UI,Arial,sans-serif;color:var(--ink);margin:0;font-size:10.6px;line-height:1.5}
+  h1,h2,h3,.ser{font-family:'Source Serif 4',Georgia,serif}
+  .head{display:flex;align-items:center;justify-content:space-between;background:linear-gradient(120deg,var(--navy),var(--blue));color:#fff;padding:14px 18px;border-radius:9px;margin-bottom:11px}
+  .brand{display:flex;align-items:center;gap:11px}
+  .brand .chip{background:#fff;border-radius:9px;padding:4px 7px;display:inline-flex}
+  .brand .chip img{height:36px;display:block}
+  .brand b{font-family:'Poppins';font-size:19px;font-weight:800}
+  .head .t{text-align:right}
+  .head .t b{font-family:'Source Serif 4';font-size:14px;display:block}
+  .head .t span{font-size:9.3px;opacity:.92}
+  .fill{background:#fff8ec;border:1px solid #f0dcb0;border-left:4px solid var(--gold);border-radius:6px;padding:8px 13px;font-size:10px;margin-bottom:12px}
+  .fill b{color:var(--gold)}
+  .key{background:var(--bg);border:1px solid #cfe0f7;border-radius:8px;padding:11px 14px;margin-bottom:13px}
+  .key h3{margin:0 0 6px;font-size:12px;color:var(--navy)}
+  .key ol{margin:0;padding-left:18px}
+  .key li{margin:3px 0;font-size:10.4px}
+  .key li b{color:var(--navy)}
+  h2.sec{font-size:12.5px;color:var(--navy);margin:16px 0 7px;padding-bottom:4px;border-bottom:2px solid var(--line)}
+  h2.sec .n{display:inline-block;background:var(--navy);color:#fff;font-size:9.5px;font-weight:700;width:17px;height:17px;border-radius:5px;text-align:center;line-height:17px;margin-right:6px;font-family:'Inter'}
+  .qa{margin:0 0 9px;padding-left:2px}
+  .q{font-weight:700;color:var(--navy)}
+  .q::before{content:"Q  ";color:var(--blue);font-weight:800}
+  .a{margin-top:2px}
+  .a::before{content:"A  ";color:var(--green);font-weight:800}
+  .a ul{margin:3px 0 0;padding-left:16px}.a li{margin:2px 0}
+  .ins{color:var(--red);font-weight:600}
+  .cb h2.sec{border-color:#f0cfc9}
+  .cb .q::before{content:"Q  ";color:var(--gold)}
+  .ask{background:var(--soft);border:1px solid var(--line);border-radius:8px;padding:10px 14px}
+  .ask ul{margin:4px 0 0;padding-left:17px}.ask li{margin:3px 0;font-size:10.3px}
+  .pb{page-break-before:always}
+  .foot{display:flex;justify-content:space-between;font-size:8.3px;color:var(--muted);margin-top:13px;border-top:1px solid var(--line);padding-top:6px}
+  .foot b{color:var(--navy)}
+</style>
+</head>
+<body>
+
+<div class="head">
+  <div class="brand"><span class="chip"><img src="payvyn-mark.png" alt="Payvyn"></span><b>Payvyn</b></div>
+  <div class="t"><b>HHFCU Core-Team Meeting &mdash; Prep</b><span>PayExpress / Payvyn (BizFormCorp) &times; HHFCU core team &middot; CU*Answers / Catalyst</span></div>
+</div>
+
+<div class="fill"><b>Before the meeting:</b> fill the <span class="ins">[bracketed]</span> items with your real numbers (licenses held, projected volume, your KYC vendor, BSA officer). Everything else is ready to say as written.</div>
+
+<div class="key">
+  <h3>Lead with these 5 messages</h3>
+  <ol>
+    <li><b>We don't touch your core.</b> Pay-in is a standard NACHA file you originate through Catalyst &mdash; no CU*Answers integration, no API into your systems.</li>
+    <li><b>We're non-custodial.</b> Funds settle to HHFCU's FBO account; Payvyn never holds money.</li>
+    <li><b>Clear roles:</b> BizFormCorp is the Originator / Third-Party Sender; HHFCU is the ODFI/sponsor. We prepare, you originate &amp; oversee.</li>
+    <li><b>We de-risk the ACH:</b> account-ownership verification + account validation + OFAC on sender &amp; recipient + native SSN pre-screen &mdash; so return rates stay low.</li>
+    <li><b>Every sender becomes an HHFCU member</b>, so your CIP does the identity match &mdash; our app opens the membership and hands you the application; we pre-screen (SSN validity + OFAC) at $0 first. We bring our own licenses &amp; BSA/AML; HHFCU sponsors and oversees.</li>
+  </ol>
+</div>
+
+<h2 class="sec"><span class="n">1</span>Integration &amp; technical (their main focus)</h2>
+<div class="qa"><div class="q">Do you connect to our core (CU*Answers)? Do you need API access?</div>
+<div class="a"><b>No.</b> Pay-in is <b>file-based</b> &mdash; we generate a standard NACHA file and deliver it to you; you originate it through Catalyst. We never log into, read, or write to CU*Answers. If you ever want real-time account creation/posting, that's an <i>optional</i> later phase via a scoped CU*Answers API you approve &mdash; not needed to start.</div></div>
+
+<div class="qa"><div class="q">What file format do you send, and how is it transmitted?</div>
+<div class="a">Standard <b>94-character NACHA</b>. Two types: <b>PPD micro-deposit credits</b> (entry description "ACCTVERIFY") for ownership verification, and <b>WEB debits</b> for funding. We deliver via whatever channel Catalyst / CU*Answers specify (SFTP, etc.), plus a CSV <b>batch manifest</b> for your reconciliation. You see and originate every file &mdash; nothing happens without you.</div></div>
+
+<div class="qa"><div class="q">Where does your platform run, and where is sensitive data stored?</div>
+<div class="a">Member app is a secure web app; the verification backend runs on managed cloud infrastructure. <b>Full SSN and account numbers are stored server-side only, encrypted in transit and at rest</b> &mdash; never in the browser. Verification is attempt-limited. <span class="ins">[Add: SOC 2 status, last pen-test date, incident-response plan.]</span></div></div>
+
+<div class="qa"><div class="q">Do you need any member data out of our core?</div>
+<div class="a">No. We collect the applicant data ourselves and hand you what you need. For reconciliation we only need your <b>returns (R-codes/NOCs) and settlement confirmations</b> back.</div></div>
+
+<div class="qa"><div class="q">How do returns and NOCs come back and get handled?</div>
+<div class="a">You forward return detail (R-code, trace, amount) and NOCs by the next business day. We match by <b>trace number + our reference</b> and automatically reverse the transfer or update the account data. We manage return rates under the Nacha thresholds (0.5% unauthorized / 3% administrative / 15% overall).</div></div>
+
+<h2 class="sec"><span class="n">2</span>ACH operations</h2>
+<div class="qa"><div class="q">Which SEC codes, and Same-Day?</div>
+<div class="a"><b>WEB</b> for consumer debits (online-authorized); <b>PPD</b> micro-deposits with "ACCTVERIFY" per the Nacha Micro-Entry rule. We'd like <b>Same-Day</b> so verification and funding settle same business day &mdash; subject to your/Catalyst confirmation.</div></div>
+
+<div class="qa"><div class="q">What volume, transaction size, and limits should we expect?</div>
+<div class="a"><span class="ins">[Insert: e.g., ~X transfers/day, average $Y, ramping to $Z/day.]</span> We'll operate within whatever <b>origination and exposure limits</b> you set in the Origination Agreement &mdash; we're happy to start conservative and ramp as the return/risk history proves out.</div></div>
+
+<div class="qa"><div class="q">Settlement risk &mdash; will you prefund, or do we carry exposure?</div>
+<div class="a">We're <b>non-custodial</b>; debits settle to your FBO. We're open to your preferred risk model &mdash; <span class="ins">[prefunding / a reserve / debit-clears-before-payout]</span> &mdash; whatever keeps HHFCU's exposure comfortable.</div></div>
+
+<div class="qa"><div class="q">The Nacha WEB rule requires account validation &mdash; how do you meet it?</div>
+<div class="a">Ownership is verified via <b>micro-deposits</b> + ABA routing checksum, and we add a <b>commercial account-validation service</b> &mdash; satisfying the WEB account-validation requirement before any debit.</div></div>
+
+<h2 class="sec pb"><span class="n">3</span>Security &amp; data</h2>
+<div class="qa"><div class="q">How is PII/SSN protected, who has access, and what's your retention?</div>
+<div class="a">Encrypted in transit + at rest; full SSN/account numbers server-side only; scoped access with audit logging. Retention: CIP records per <b>31 CFR 1020.220</b> (5 years after account closure); ACH authorizations retained 2 years after termination (Nacha). <span class="ins">[Add: SOC 2, pen-test, breach-notification commitment.]</span></div></div>
+
+<div class="qa"><div class="q">What's your fraud and account-takeover control?</div>
+<div class="a">Native SSN validity + known-invalid rejection, OFAC screening on sender <b>and</b> recipient, ownership verification, attempt-limiting, and transaction monitoring &mdash; layered before funds move.</div></div>
+
+<h2 class="sec"><span class="n">4</span>Compliance &amp; Third-Party-Sender risk</h2>
+<div class="qa"><div class="q">What licenses and registrations do you hold?</div>
+<div class="a"><span class="ins">[FinCEN MSB registration: held / in progress. State money transmitter licenses incl. Texas: list held / pending. Be specific and honest.]</span> We'll provide the full due-diligence package you listed (financials, beneficial ownership, policies, TPS audit).</div></div>
+
+<div class="qa"><div class="q">Describe your BSA/AML and OFAC program.</div>
+<div class="a">Written BSA/AML program with <b>OFAC screening on both sender and recipient</b> (against the live public lists), transaction monitoring, SAR/CTR filing, and independent testing. BSA Officer: <span class="ins">[name]</span>. We operate under HHFCU's oversight as sponsor.</div></div>
+
+<div class="qa"><div class="q">The Nigeria corridor &mdash; how do you manage that risk?</div>
+<div class="a">Payout only through a <b>licensed IMTO</b>; sanctions/OFAC + recipient name screening on every transfer; monitoring tuned to remittance-corridor typologies; limits per sender.</div></div>
+
+<div class="qa"><div class="q">How will you keep ACH return rates under the Nacha thresholds?</div>
+<div class="a">Verify ownership + validate the account <b>before</b> debiting, capture proper WEB authorization, screen for fraud, and monitor rates continuously &mdash; targeting well under 0.5% unauthorized. Starting with conservative limits further protects the ratio while volume is young.</div></div>
+
+<div class="qa"><div class="q">Reg E / consumer protection and disputes?</div>
+<div class="a">Remittance-transfer disclosures, a pre-payment quote, a receipt, and cancellation rights. We handle sender inquiries and disputes; liability allocation is set in the agreement. <span class="ins">[State your reserve / indemnification position.]</span></div></div>
+
+<h2 class="sec"><span class="n">5</span>Identity / CIP</h2>
+<div class="qa"><div class="q">Member vs. customer &mdash; which model, and how is identity verified?</div>
+<div class="a"><b>Decided: every PayExpress sender becomes an HHFCU member</b> &mdash; so your CIP applies and does the authoritative identity match. Our app opens the membership as part of onboarding (free, $5 share) and hands you the <b>member application</b> (name, DOB, SSN/ITIN, address, ID + selfie). Our <b>native SSN validity + OFAC pre-screen runs first, live today at $0</b>, so only clean applications reach your CIP. This keeps identity proofing inside HHFCU &mdash; no third-party bureau, no eCBSV needed.</div></div>
+
+<h2 class="sec cb"><span class="n">6</span>Curveballs &mdash; be ready</h2>
+<div class="cb">
+<div class="qa"><div class="q">Prove you never touch our core.</div><div class="a">Happy to walk the architecture live: the pay-in is a NACHA file hand-off; we hold no credentials into CU*Answers; you originate every file. Our architecture doc states it in writing.</div></div>
+<div class="qa"><div class="q">Who is liable if an unauthorized/fraudulent debit posts, or BizFormCorp fails with funds in flight?</div><div class="a">Funds sit in <b>HHFCU's</b> FBO, not ours &mdash; we're non-custodial. Fraud loss and wind-down are allocated in the agreement; our verification + validation + OFAC layers minimize the exposure. <span class="ins">[Add your indemnification/reserve offer.]</span></div></div>
+<div class="qa"><div class="q">Cloud storage of SSNs &mdash; is that acceptable for us?</div><div class="a">Encrypted at rest/in transit, server-side only, scoped access, audit logs. We'll meet your data-handling requirements and sign a data-security addendum. <span class="ins">[SOC 2 status.]</span></div></div>
+<div class="qa"><div class="q">What if Catalyst won't support Same-Day TPS origination?</div><div class="a">We fall back to standard ACH (next-day) with no code change &mdash; the only effect is settlement timing, not feasibility.</div></div>
+<div class="qa"><div class="q">Can we review/approve every file before it's originated?</div><div class="a">Yes &mdash; <b>you</b> originate it, so you see and control every file, plus the manifest and the operations dashboard.</div></div>
+<div class="qa"><div class="q">Do you ever hold funds, even momentarily?</div><div class="a"><b>No.</b> Never. Settlement is directly to your FBO.</div></div>
+<div class="qa"><div class="q">What's your real ACH return history / how do we trust a new program?</div><div class="a">It's a new program, so we start small with tight limits and prove the ratio; the pre-debit verification + validation is specifically designed to keep unauthorized returns minimal. <span class="ins">[Cite any prior ACH/processing history you have.]</span></div></div>
+<div class="qa"><div class="q">Why HHFCU and not a big bank sponsor?</div><div class="a"><span class="ins">[Your relationship + the CU-exemption transmitter model + partnership terms.]</span></div></div>
+</div>
+
+<h2 class="sec"><span class="n">7</span>Questions YOU should ask them</h2>
+<div class="ask"><ul>
+  <li>The <b>Catalyst file spec</b> + transmission channel (SFTP details), and Same-Day <b>cutoff times</b>.</li>
+  <li><b>Immediate Destination / Origin</b> values and the Destination / Origin <b>names</b> for the file header.</li>
+  <li>Can Catalyst + CU*Answers support <b>Same-Day TPS origination</b> (debits &amp; credits)?</li>
+  <li><b>Settlement timing</b>, prefunding / reserve expectations, and the <b>exposure limits</b> you're considering.</li>
+  <li><b>Member vs. customer</b> &mdash; your preference and its implications for CIP.</li>
+  <li><b>Return / NOC</b> delivery channel and timing.</li>
+  <li><b>Test window</b> + pre-note (zero-dollar) process &mdash; when can we test?</li>
+  <li>Your <b>timeline</b>: due diligence &rarr; Origination Agreement &rarr; Board &rarr; NCUA notice.</li>
+</ul></div>
+
+<div class="foot">
+  <span><b>Payvyn / PayExpress</b> by BizFormCorp &middot; HHFCU core-team meeting prep &middot; internal</span>
+  <span>Confidential &middot; October 2026</span>
+</div>
+
+</body>
+</html>

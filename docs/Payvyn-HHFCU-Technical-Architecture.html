@@ -1,0 +1,197 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Payvyn - HHFCU Technical Architecture</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,600;8..60,700&family=Inter:wght@400;500;600;700&family=Poppins:wght@700;800&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root{--navy:#0b3b8c;--blue:#2b7de9;--sky:#6fb4f2;--gold:#b7791f;--green:#1f8a52;--red:#c0392b;--ink:#1f2733;--muted:#58647a;--line:#dde5f1;--bg:#eef3fa;--soft:#f6f9fd}
+  *{box-sizing:border-box}
+  @page{size:Letter;margin:13mm 14mm}
+  body{font-family:'Inter',-apple-system,Segoe UI,Arial,sans-serif;color:var(--ink);margin:0;font-size:10.3px;line-height:1.46}
+  h1,h2,h3,.ser{font-family:'Source Serif 4',Georgia,serif}
+  .head{display:flex;align-items:center;justify-content:space-between;background:linear-gradient(120deg,var(--navy),var(--blue));color:#fff;padding:14px 18px;border-radius:9px;margin-bottom:12px}
+  .brand{display:flex;align-items:center;gap:11px}
+  .brand .chip{background:#fff;border-radius:9px;padding:4px 7px;display:inline-flex}
+  .brand .chip img{height:38px;display:block}
+  .brand b{font-family:'Poppins';font-size:20px;font-weight:800}
+  .head .t{text-align:right}
+  .head .t b{font-family:'Source Serif 4';font-size:14px;display:block}
+  .head .t span{font-size:9.5px;opacity:.92}
+  .lead{background:var(--bg);border-left:4px solid var(--blue);border-radius:5px;padding:10px 14px;font-size:10.5px;margin-bottom:13px}
+  h2.sec{font-size:12.5px;color:var(--navy);margin:15px 0 7px;padding-bottom:4px;border-bottom:2px solid var(--line)}
+  h2.sec .n{display:inline-block;background:var(--navy);color:#fff;font-family:'Inter';font-size:9.5px;font-weight:700;width:17px;height:17px;border-radius:5px;text-align:center;line-height:17px;margin-right:6px}
+  svg{width:100%;height:auto;display:block}
+  .cap{font-size:8.8px;color:var(--muted);text-align:center;margin-top:3px}
+  table{width:100%;border-collapse:collapse;font-size:9.3px;margin:3px 0 6px}
+  th,td{border:1px solid var(--line);padding:5px 7px;text-align:left;vertical-align:top}
+  th{background:var(--navy);color:#fff;font-weight:600;font-size:8.8px}
+  td b{color:var(--navy)}
+  .dir{font-family:'JetBrains Mono',monospace;font-size:8.5px;white-space:nowrap}
+  .req{font-weight:700;color:#156b3e}
+  .opt{font-weight:700;color:var(--gold)}
+  .flow{counter-reset:step;margin:4px 0 2px;padding:0;list-style:none}
+  .flow li{position:relative;padding:4px 0 7px 30px;font-size:10px}
+  .flow li::before{counter-increment:step;content:counter(step);position:absolute;left:0;top:3px;width:20px;height:20px;border-radius:50%;background:var(--bg);border:1.5px solid var(--blue);color:var(--navy);font-weight:700;font-size:10px;text-align:center;line-height:17px}
+  .flow li b{color:var(--navy)}
+  .two{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+  .card{border:1px solid var(--line);border-radius:8px;padding:10px 13px}
+  .card h3{margin:0 0 5px;font-size:11px;color:var(--navy)}
+  .card.rec{border-color:#bfe3cd;background:#f1faf4}
+  .card.rec h3{color:#156b3e}
+  .pill{display:inline-block;font-size:8px;font-weight:700;padding:2px 7px;border-radius:20px;margin-left:6px}
+  .pill.g{background:#e9f8ef;color:#156b3e}.pill.b{background:#e8f0fd;color:#0b3b8c}
+  ul.t{margin:3px 0 4px;padding-left:15px}ul.t li{margin:2px 0;font-size:9.6px}
+  .note{background:#fff8ec;border:1px solid #f0dcb0;border-left:4px solid var(--gold);border-radius:6px;padding:9px 13px;font-size:10px;margin:8px 0}
+  .note b{color:var(--gold)}
+  .pb{page-break-before:always}
+  .foot{display:flex;justify-content:space-between;font-size:8.3px;color:var(--muted);margin-top:12px;border-top:1px solid var(--line);padding-top:6px}
+  .foot b{color:var(--navy)}
+</style>
+</head>
+<body>
+
+<div class="head">
+  <div class="brand"><span class="chip"><img src="payvyn-mark.png" alt="Payvyn"></span><b>Payvyn</b></div>
+  <div class="t"><b>Technical Architecture &amp; Core Access</b><span>What Payvyn needs from the HHFCU core, and the end-to-end flow</span></div>
+</div>
+
+<div class="lead"><b>Payvyn is a member-facing onboarding &amp; verification layer; HHFCU's core is the system of record.</b> Payvyn never replaces or sits inside the core &mdash; it <b>feeds verified members and funded transactions into it and reads back status</b>, through three well-defined integration points: <b>CIP/KYC</b>, <b>ACH</b>, and the <b>core</b> (account creation + posting). This document lists exactly what is exchanged, the data flow, and a least-privilege way to start.</div>
+
+<div class="note" style="border-left-color:var(--green);background:#eef7f1;font-size:10.8px;margin-bottom:13px">
+  <b style="color:#156b3e;font-size:11.5px">Payvyn does NOT get access to your core.</b><br>
+  In the recommended model, Payvyn <b>never connects to, signs into, reads from, or writes to your core banking system</b> &mdash; <b>HHFCU remains the only party that touches the core.</b> Payvyn hands over verified members and funded-transaction files; your team posts them into the core. The core, member data, and funds stay entirely behind HHFCU's walls. (The optional later API phase uses only a <b>narrow, scoped client limited to the named operations below</b> &mdash; never open, admin, or standing access, and always subject to HHFCU's approval.)
+</div>
+
+<h2 class="sec"><span class="n">1</span>Architecture at a glance</h2>
+<svg viewBox="0 0 720 340" xmlns="http://www.w3.org/2000/svg" font-family="Inter">
+  <defs>
+    <marker id="ar" markerWidth="9" markerHeight="9" refX="7" refY="3" orient="auto" markerUnits="strokeWidth"><path d="M0,0 L7,3 L0,6 Z" fill="#2b7de9"/></marker>
+    <marker id="arg" markerWidth="9" markerHeight="9" refX="7" refY="3" orient="auto" markerUnits="strokeWidth"><path d="M0,0 L7,3 L0,6 Z" fill="#1f8a52"/></marker>
+  </defs>
+  <!-- Member -->
+  <rect x="8" y="138" width="96" height="64" rx="9" fill="#eef3fa" stroke="#2b7de9" stroke-width="1.5"/>
+  <text x="56" y="162" text-anchor="middle" font-size="11" font-weight="700" fill="#0b3b8c">Member</text>
+  <text x="56" y="178" text-anchor="middle" font-size="8.5" fill="#58647a">browser / app</text>
+  <text x="56" y="190" text-anchor="middle" font-size="8.5" fill="#58647a">payvyn.org</text>
+
+  <!-- Payvyn -->
+  <rect x="158" y="56" width="192" height="228" rx="11" fill="#f6f9fd" stroke="#0b3b8c" stroke-width="1.6"/>
+  <text x="254" y="74" text-anchor="middle" font-size="11.5" font-weight="800" font-family="Poppins" fill="#0b3b8c">Payvyn</text>
+  <text x="254" y="86" text-anchor="middle" font-size="8" fill="#58647a">(BizFormCorp cloud)</text>
+  <rect x="172" y="96" width="164" height="52" rx="7" fill="#fff" stroke="#c7d3e6"/>
+  <text x="254" y="114" text-anchor="middle" font-size="9.3" font-weight="700" fill="#1f2733">Onboarding app</text>
+  <text x="254" y="127" text-anchor="middle" font-size="7.8" fill="#58647a">identity &middot; bank link &middot; fund</text>
+  <text x="254" y="138" text-anchor="middle" font-size="7.8" fill="#58647a">operations console</text>
+  <rect x="172" y="158" width="164" height="110" rx="7" fill="#fff" stroke="#c7d3e6"/>
+  <text x="254" y="175" text-anchor="middle" font-size="9.3" font-weight="700" fill="#1f2733">Verification backend</text>
+  <text x="254" y="190" text-anchor="middle" font-size="7.8" fill="#156b3e">native pre-screen (SSN validity)</text>
+  <text x="254" y="201" text-anchor="middle" font-size="7.8" fill="#156b3e">OFAC sanctions screening</text>
+  <text x="254" y="212" text-anchor="middle" font-size="7.8" fill="#58647a">CIP hand-off client</text>
+  <text x="254" y="223" text-anchor="middle" font-size="7.8" fill="#58647a">ABA validation + bank verify</text>
+  <text x="254" y="234" text-anchor="middle" font-size="7.8" fill="#58647a">NACHA file generation</text>
+  <text x="254" y="245" text-anchor="middle" font-size="7.8" fill="#58647a">reconciliation</text>
+  <text x="254" y="260" text-anchor="middle" font-size="7.5" font-style="italic" fill="#8a5a12">native checks = $0, no aggregator</text>
+
+  <!-- HHFCU -->
+  <rect x="442" y="26" width="270" height="300" rx="11" fill="#eef7f1" stroke="#156b3e" stroke-width="1.6"/>
+  <text x="577" y="43" text-anchor="middle" font-size="11" font-weight="700" fill="#156b3e">Heritage Hub FCU</text>
+  <rect x="456" y="52" width="242" height="48" rx="7" fill="#fff" stroke="#bfe3cd"/>
+  <text x="577" y="70" text-anchor="middle" font-size="9.5" font-weight="700" fill="#0b3b8c">Core banking &mdash; system of record</text>
+  <text x="577" y="84" text-anchor="middle" font-size="7.8" fill="#58647a">member accounts &middot; postings &middot; balances</text>
+  <text x="577" y="94" text-anchor="middle" font-size="7.5" fill="#58647a">(Symitar / Corelation / Fiserv / Jack Henry / FIS)</text>
+  <rect x="456" y="110" width="242" height="40" rx="7" fill="#fff" stroke="#bfe3cd"/>
+  <text x="577" y="127" text-anchor="middle" font-size="9.3" font-weight="700" fill="#0b3b8c">CIP / KYC</text>
+  <text x="577" y="140" text-anchor="middle" font-size="7.8" fill="#58647a">core module or HHFCU's KYC vendor</text>
+  <rect x="456" y="160" width="242" height="40" rx="7" fill="#fff" stroke="#bfe3cd"/>
+  <text x="577" y="177" text-anchor="middle" font-size="9.3" font-weight="700" fill="#0b3b8c">ACH origination (ODFI)</text>
+  <text x="577" y="190" text-anchor="middle" font-size="7.8" fill="#58647a">Same-Day ACH &middot; returns (R-codes)</text>
+  <rect x="456" y="210" width="242" height="38" rx="7" fill="#fff" stroke="#bfe3cd"/>
+  <text x="577" y="227" text-anchor="middle" font-size="9.3" font-weight="700" fill="#0b3b8c">Settlement / FBO account</text>
+  <text x="577" y="239" text-anchor="middle" font-size="7.8" fill="#58647a">funds in transit</text>
+
+  <!-- arrows member <-> payvyn -->
+  <line x1="104" y1="170" x2="156" y2="170" stroke="#2b7de9" stroke-width="1.6" marker-end="url(#ar)"/>
+  <line x1="156" y1="182" x2="106" y2="182" stroke="#2b7de9" stroke-width="1.6" marker-end="url(#ar)"/>
+  <!-- payvyn -> CIP (1) -->
+  <line x1="350" y1="130" x2="454" y2="130" stroke="#2b7de9" stroke-width="1.6" marker-end="url(#ar)"/>
+  <circle cx="402" cy="122" r="7.5" fill="#0b3b8c"/><text x="402" y="125" text-anchor="middle" font-size="8.5" font-weight="700" fill="#fff">1</text>
+  <!-- payvyn <-> ACH (2) -->
+  <line x1="350" y1="178" x2="454" y2="178" stroke="#1f8a52" stroke-width="1.6" marker-end="url(#arg)"/>
+  <line x1="454" y1="188" x2="352" y2="188" stroke="#1f8a52" stroke-width="1.6" marker-end="url(#arg)"/>
+  <circle cx="402" cy="170" r="7.5" fill="#156b3e"/><text x="402" y="173" text-anchor="middle" font-size="8.5" font-weight="700" fill="#fff">2</text>
+  <!-- payvyn -> core (3) -->
+  <line x1="350" y1="76" x2="454" y2="76" stroke="#2b7de9" stroke-width="1.6" marker-end="url(#ar)"/>
+  <circle cx="402" cy="68" r="7.5" fill="#0b3b8c"/><text x="402" y="71" text-anchor="middle" font-size="8.5" font-weight="700" fill="#fff">3</text>
+  <!-- legend -->
+  <text x="360" y="305" text-anchor="middle" font-size="8.3" fill="#58647a">1&nbsp;Identity (CIP hand-off)&nbsp;&nbsp;&middot;&nbsp;&nbsp;2&nbsp;ACH (NACHA out, returns in)&nbsp;&nbsp;&middot;&nbsp;&nbsp;3&nbsp;Core (create member + post funds)</text>
+</svg>
+<div class="cap">Three integration points. Payvyn runs the free native checks first; only verified members and funded transactions reach the core.</div>
+
+<h2 class="sec"><span class="n">2</span>End-to-end flow</h2>
+<ol class="flow">
+  <li><b>Onboard</b> &mdash; the member completes Payvyn's form: identity (name, DOB, SSN, address, ID + selfie), links their external U.S. bank, enters the amount to fund.</li>
+  <li><b>Native pre-screen</b> &mdash; Payvyn validates the SSN/ITIN and screens the name against the live OFAC lists. Instant, free, before anything reaches HHFCU. Fails stop here.</li>
+  <li><b>Identity (point&nbsp;1)</b> &mdash; Payvyn hands the pre-screened applicant to <b>HHFCU's CIP/KYC</b>; HHFCU returns pass / review / fail.</li>
+  <li><b>Open account (point&nbsp;3)</b> &mdash; on pass, a new member/account is created in the core &mdash; via a core API, or via a new-account file HHFCU's ops processes.</li>
+  <li><b>Bank ownership (point&nbsp;2)</b> &mdash; Payvyn verifies the external account: two micro-deposits originated over HHFCU's ACH (or instant, if HHFCU offers it).</li>
+  <li><b>Fund (point&nbsp;2)</b> &mdash; Payvyn generates a NACHA file; HHFCU originates an ACH debit from the member's external bank; funds settle to the <b>FBO/settlement account</b>.</li>
+  <li><b>Post (point&nbsp;3)</b> &mdash; the settled amount is credited to the member's new core account &mdash; via a core posting API, or a settlement/posting file HHFCU posts.</li>
+  <li><b>Reconcile</b> &mdash; Payvyn matches settlement + ACH returns (R-codes) against the core and flags exceptions in the operations console.</li>
+</ol>
+
+<h2 class="sec pb"><span class="n">3</span>What's exchanged &mdash; and what stays inside the core</h2>
+<table>
+  <tr><th style="width:21%">Access</th><th style="width:27%">Purpose</th><th style="width:11%">Direction</th><th style="width:21%">Data</th><th style="width:20%">Protocol options</th></tr>
+  <tr><td><b>CIP / KYC submission + result</b></td><td>Authoritative SSN-to-person identity match</td><td class="dir">out &amp; in</td><td>name, DOB, SSN, address &rarr; decision + reason codes</td><td>REST API or SFTP</td></tr>
+  <tr><td><b>ACH origination + returns</b></td><td>Micro-deposits &amp; funding debit; return handling</td><td class="dir">out &amp; in</td><td>NACHA file out; R-codes (R03/R04&hellip;) in</td><td>FedLine / correspondent / core ACH / SFTP</td></tr>
+  <tr><td><b>Settlement / FBO account</b></td><td>Hold funds in transit before posting</td><td class="dir">&mdash;</td><td>account + routing to settle against</td><td>account mapping</td></tr>
+  <tr><td><b>Member / account creation</b></td><td>Open the new member in the core</td><td class="dir">out (write)</td><td>member CIP fields + product/account type</td><td>Core API <i>or</i> new-account file</td></tr>
+  <tr><td><b>Transaction posting</b></td><td>Credit the funded amount to the member</td><td class="dir">out (write)</td><td>post credit to member account</td><td>Core API <i>or</i> settlement/posting file</td></tr>
+  <tr><td><b>Posting / transaction status</b></td><td>Reconciliation &amp; confirmations</td><td class="dir">in (read)</td><td>posting confirmations, holds</td><td>Core API or report feed</td></tr>
+  <tr><td><b>Account inquiry</b> <span class="opt">(optional)</span></td><td>Show balance / status to the member</td><td class="dir">in (read)</td><td>account status, balance</td><td>Core API</td></tr>
+</table>
+<div class="note"><b>Key point:</b> this is a list of <b>data exchanged</b>, not core access. In the recommended file-based model, member creation + posting are done <b>by file</b> (HHFCU's ops posts), so <b>Payvyn has no access to the core at all</b> &mdash; it only hands HHFCU verified data. Items 1&ndash;3 (CIP, ACH, FBO) are required; items 4&ndash;7 are things <b>HHFCU does</b> from Payvyn's files, or optionally via a scoped API later.</div>
+
+<h2 class="sec"><span class="n">4</span>Two ways to connect &mdash; start least-privilege</h2>
+<div class="two">
+  <div class="card rec">
+    <h3>A. File-based <span class="pill g">RECOMMENDED START</span></h3>
+    <ul class="t">
+      <li><b>Zero core access.</b> Payvyn never touches the core &mdash; it exchanges secure files over <b>SFTP</b>.</li>
+      <li>Applicant &rarr; CIP; NACHA &rarr; ACH; a <b>settlement/posting file</b> &rarr; HHFCU's ops posts to the core.</li>
+      <li>HHFCU is the <b>only</b> party that writes to the core.</li>
+      <li>Fastest to approve &mdash; minimal security review; no core API project.</li>
+    </ul>
+  </div>
+  <div class="card">
+    <h3>B. API-integrated <span class="pill b">PHASE 2</span></h3>
+    <ul class="t">
+      <li>Direct core APIs for <b>real-time</b> account creation, posting, inquiry.</li>
+      <li>Via the core's API layer: <b>SymXchange</b> (Symitar), <b>KeyBridge</b> (Corelation), <b>DNA APIs</b> (Fiserv), <b>jXchange</b> (Jack Henry), <b>Code Connect</b> (FIS).</li>
+      <li>Smoother member experience (instant open + post).</li>
+      <li>More access &rarr; full security review, scoped API client, network tunnel.</li>
+    </ul>
+  </div>
+</div>
+
+<h2 class="sec"><span class="n">5</span>Security &amp; least privilege</h2>
+<ul class="t">
+  <li><b>Scoped credentials per integration</b> &mdash; a CIP key, SFTP keys, and (phase 2) a core API client limited to <b>only the operations above</b>. No standing admin access.</li>
+  <li><b>Network controls</b> &mdash; IP allowlisting, mutual TLS, and/or a VPN tunnel into HHFCU's network for any core API calls.</li>
+  <li><b>Data protection</b> &mdash; SSN/account numbers encrypted in transit and at rest; Payvyn retains the minimum (CIP record + masked account); full numbers stay server-side, never in the browser.</li>
+  <li><b>Audit</b> &mdash; every submission, origination, and posting logged on both sides; returns and exceptions reconciled daily.</li>
+  <li><b>Separation</b> &mdash; funds settle to an HHFCU-controlled FBO account; Payvyn never holds member funds.</li>
+</ul>
+
+<div class="note" style="border-left-color:var(--blue);background:var(--bg)"><b style="color:var(--navy)">Two things we need from HHFCU to finalize this:</b> &nbsp;(1) which <b>core banking platform</b> HHFCU runs (Symitar/Episys, Corelation KeyStone, Fiserv DNA, Jack Henry, FIS&hellip;) &mdash; it determines the exact API layer; and (2) whether HHFCU prefers to <b>start file-based</b> (recommended) or go <b>direct API</b>. Everything else is in the Integration Intake Sheet.</div>
+
+<div class="foot">
+  <span><b>Payvyn</b> by BizFormCorp &middot; Technical Architecture &amp; Core Access &middot; for Heritage Hub FCU</span>
+  <span>Confidential &middot; October 2026</span>
+</div>
+
+</body>
+</html>
