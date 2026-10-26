@@ -1,5 +1,5 @@
 /* Payvyn service worker — app-shell cache, network-first for navigations */
-var CACHE = 'payvyn-v7';
+var CACHE = 'payvyn-v8';
 var SHELL = ['/', '/index.html', '/banks-us.js', '/manifest.webmanifest',
   '/assets/payvyn-mark.png', '/assets/favicon.png', '/assets/icon-192.png', '/assets/icon-512.png'];
 
